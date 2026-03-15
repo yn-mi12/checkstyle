@@ -30,6 +30,7 @@ import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.CheckUtil;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
  * <div>
@@ -221,7 +222,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
         final int astType = ast.getType();
         if (astTypeIsClassOrEnumOrRecordDef(astType)) {
             frame.setClassOrEnumOrRecordDef(true);
-            frame.setFrameName(ast.findFirstToken(TokenTypes.IDENT).getText());
+            frame.setFrameName(TokenUtil.getIdent(ast).getText());
         }
         currentFrame.addChild(frame);
         currentFrame = frame;
@@ -526,7 +527,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          *
          * @param frameName value to set.
          */
-        public void setFrameName(String frameName) {
+        /* package */ void setFrameName(String frameName) {
             this.frameName = frameName;
         }
 
@@ -535,7 +536,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          *
          * @return frame name.
          */
-        public String getFrameName() {
+        /* package */ String getFrameName() {
             return frameName;
         }
 
@@ -544,7 +545,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          *
          * @return parent frame.
          */
-        public FieldFrame getParent() {
+        /* package */ FieldFrame getParent() {
             return parent;
         }
 
@@ -553,7 +554,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          *
          * @return children of this frame.
          */
-        public Set<FieldFrame> getChildren() {
+        /* package */ Set<FieldFrame> getChildren() {
             return Collections.unmodifiableSet(children);
         }
 
@@ -562,7 +563,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          *
          * @param child frame to add.
          */
-        public void addChild(FieldFrame child) {
+        /* package */ void addChild(FieldFrame child) {
             children.add(child);
         }
 
@@ -571,7 +572,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          *
          * @param field the ast of the field.
          */
-        public void addField(DetailAST field) {
+        /* package */ void addField(DetailAST field) {
             if (field.findFirstToken(TokenTypes.IDENT) != null) {
                 fieldNameToAst.put(getFieldName(field), field);
             }
@@ -582,7 +583,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          *
          * @param value value to set.
          */
-        public void setClassOrEnumOrRecordDef(boolean value) {
+        /* package */ void setClassOrEnumOrRecordDef(boolean value) {
             classOrEnumOrRecordDef = value;
         }
 
@@ -591,7 +592,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          *
          * @return classOrEnumOrRecordDef.
          */
-        public boolean isClassOrEnumOrRecordDef() {
+        /* package */ boolean isClassOrEnumOrRecordDef() {
             return classOrEnumOrRecordDef;
         }
 
@@ -600,7 +601,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          *
          * @param methodCall METHOD_CALL ast.
          */
-        public void addMethodCall(DetailAST methodCall) {
+        /* package */ void addMethodCall(DetailAST methodCall) {
             methodCalls.add(methodCall);
         }
 
@@ -610,7 +611,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          * @param name name of the field to check.
          * @return DetailAST if this FieldFrame contains instance field.
          */
-        public DetailAST findField(String name) {
+        /* package */ DetailAST findField(String name) {
             return fieldNameToAst.get(name);
         }
 
@@ -619,7 +620,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          *
          * @return method calls of this frame.
          */
-        public Set<DetailAST> getMethodCalls() {
+        /* package */ Set<DetailAST> getMethodCalls() {
             return Collections.unmodifiableSet(methodCalls);
         }
 
@@ -630,7 +631,7 @@ public class EqualsAvoidNullCheck extends AbstractCheck {
          * @return name of the field.
          */
         private static String getFieldName(DetailAST field) {
-            return field.findFirstToken(TokenTypes.IDENT).getText();
+            return TokenUtil.getIdent(field).getText();
         }
 
     }

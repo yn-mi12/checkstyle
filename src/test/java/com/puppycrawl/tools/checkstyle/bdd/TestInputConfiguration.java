@@ -49,6 +49,7 @@ public final class TestInputConfiguration {
             "com.puppycrawl.tools.checkstyle.checks.header.MultiFileRegexpHeaderCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck",
             "com.puppycrawl.tools.checkstyle.checks.NewlineAtEndOfFileCheck",
+            "com.puppycrawl.tools.checkstyle.checks.LineEndingCheck",
             "com.puppycrawl.tools.checkstyle.checks.UniquePropertiesCheck",
             "com.puppycrawl.tools.checkstyle.checks.OrderedPropertiesCheck",
             "com.puppycrawl.tools.checkstyle.checks.regexp.RegexpMultilineCheck",
@@ -149,8 +150,8 @@ public final class TestInputConfiguration {
 
     private DefaultConfiguration createTreeWalker() {
         final DefaultConfiguration treeWalker;
-        if (childrenModules.get(0).getModuleName().equals(TreeWalker.class.getName())) {
-            treeWalker = childrenModules.get(0).createConfiguration();
+        if (childrenModules.getFirst().getModuleName().equals(TreeWalker.class.getName())) {
+            treeWalker = childrenModules.getFirst().createConfiguration();
         }
         else {
             treeWalker = new DefaultConfiguration(TreeWalker.class.getName());

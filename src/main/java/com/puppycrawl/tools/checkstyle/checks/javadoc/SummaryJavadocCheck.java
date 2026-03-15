@@ -80,7 +80,7 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
      * This regexp is used to convert multiline javadoc to single-line without stars.
      */
     private static final Pattern JAVADOC_MULTILINE_TO_SINGLELINE_PATTERN =
-            Pattern.compile("\n +(\\*)|^ +(\\*)");
+            Pattern.compile("\n[ \\t]+(\\*)|^[ \\t]+(\\*)");
 
     /**
      * This regexp is used to remove html tags, whitespace, and asterisks from a string.
@@ -177,7 +177,7 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
     private void validateUntaggedSummary(DetailNode ast) {
         final String summaryDoc = getSummarySentence(ast);
         if (summaryDoc.isEmpty()) {
-            log(ast.getLineNumber(), MSG_SUMMARY_JAVADOC_MISSING);
+            log(ast.getLineNumber(), ast.getColumnNumber(), MSG_SUMMARY_JAVADOC_MISSING);
         }
         else if (!period.isEmpty()) {
             if (summaryDoc.contains(period)) {
@@ -185,15 +185,15 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
 
                 if (firstSentence.isPresent()) {
                     if (containsForbiddenFragment(firstSentence.get())) {
-                        log(ast.getLineNumber(), MSG_SUMMARY_JAVADOC);
+                        log(ast.getLineNumber(), ast.getColumnNumber(), MSG_SUMMARY_JAVADOC);
                     }
                 }
                 else {
-                    log(ast.getLineNumber(), MSG_SUMMARY_FIRST_SENTENCE);
+                    log(ast.getLineNumber(), ast.getColumnNumber(), MSG_SUMMARY_FIRST_SENTENCE);
                 }
             }
             else {
-                log(ast.getLineNumber(), MSG_SUMMARY_FIRST_SENTENCE);
+                log(ast.getLineNumber(), ast.getColumnNumber(), MSG_SUMMARY_FIRST_SENTENCE);
             }
         }
     }
@@ -209,19 +209,15 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
         DetailNode currentAst = inlineTagNode.getPreviousSibling();
         while (currentAst != null && isDefinedFirst) {
             switch (currentAst.getType()) {
-                case JavadocCommentsTokenTypes.TEXT:
+                case JavadocCommentsTokenTypes.TEXT ->
                     isDefinedFirst = currentAst.getText().isBlank();
-                    break;
-                case JavadocCommentsTokenTypes.HTML_ELEMENT:
+                case JavadocCommentsTokenTypes.HTML_ELEMENT ->
                     isDefinedFirst = isHtmlTagWithoutText(currentAst);
-                    break;
-                case JavadocCommentsTokenTypes.LEADING_ASTERISK:
-                case JavadocCommentsTokenTypes.NEWLINE:
+                case JavadocCommentsTokenTypes.LEADING_ASTERISK,
+                     JavadocCommentsTokenTypes.NEWLINE -> {
                     // Ignore formatting tokens
-                    break;
-                default:
-                    isDefinedFirst = false;
-                    break;
+                }
+                default -> isDefinedFirst = false;
             }
             currentAst = currentAst.getPreviousSibling();
         }
@@ -280,16 +276,19 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
         final String inlineSummary = getContentOfInlineCustomTag(descriptionNode);
         final String summaryVisible = getVisibleContent(inlineSummary);
         if (summaryVisible.isEmpty()) {
-            log(inlineSummaryTag.getLineNumber(), MSG_SUMMARY_JAVADOC_MISSING);
+            log(inlineSummaryTag.getLineNumber(), inlineSummaryTag.getColumnNumber(),
+                    MSG_SUMMARY_JAVADOC_MISSING);
         }
         else if (!period.isEmpty()) {
             final boolean isPeriodNotAtEnd =
                     summaryVisible.lastIndexOf(period) != summaryVisible.length() - 1;
             if (isPeriodNotAtEnd) {
-                log(inlineSummaryTag.getLineNumber(), MSG_SUMMARY_MISSING_PERIOD);
+                log(inlineSummaryTag.getLineNumber(), inlineSummaryTag.getColumnNumber(),
+                        MSG_SUMMARY_MISSING_PERIOD);
             }
             else if (containsForbiddenFragment(inlineSummary)) {
-                log(inlineSummaryTag.getLineNumber(), MSG_SUMMARY_JAVADOC);
+                log(inlineSummaryTag.getLineNumber(), inlineSummaryTag.getColumnNumber(),
+                        MSG_SUMMARY_JAVADOC);
             }
         }
     }
@@ -305,10 +304,12 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
         final String inlineReturn = getContentOfInlineCustomTag(descriptionNode);
         final String returnVisible = getVisibleContent(inlineReturn);
         if (returnVisible.isEmpty()) {
-            log(inlineReturnTag.getLineNumber(), MSG_SUMMARY_JAVADOC_MISSING);
+            log(inlineReturnTag.getLineNumber(), inlineReturnTag.getColumnNumber(),
+                    MSG_SUMMARY_JAVADOC_MISSING);
         }
         else if (containsForbiddenFragment(inlineReturn)) {
-            log(inlineReturnTag.getLineNumber(), MSG_SUMMARY_JAVADOC);
+            log(inlineReturnTag.getLineNumber(), inlineReturnTag.getColumnNumber(),
+                    MSG_SUMMARY_JAVADOC);
         }
     }
 
@@ -371,7 +372,8 @@ public class SummaryJavadocCheck extends AbstractJavadocCheck {
         final StringBuilder result = new StringBuilder(256);
         boolean previousWhitespace = true;
 
-        for (char letter : text.toCharArray()) {
+        for (int index = 0; index < text.length(); index++) {
+            final char letter = text.charAt(index);
             final char print;
             if (Character.isWhitespace(letter)) {
                 if (previousWhitespace) {

@@ -20,6 +20,7 @@
 package com.puppycrawl.tools.checkstyle.api;
 
 import static com.google.common.truth.Truth.assertWithMessage;
+import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.getExpectedThrowable;
 
 import java.util.SortedSet;
 
@@ -94,7 +95,7 @@ public class AbstractViolationReporterTest {
                 .that(messages)
                 .hasSize(1);
         assertWithMessage("violation differs from expected")
-                .that(messages.first().getViolation())
+                .that(messages.getFirst().getViolation())
                 .isEqualTo("This is a custom violation.");
     }
 
@@ -112,7 +113,7 @@ public class AbstractViolationReporterTest {
                 .hasSize(1);
 
         assertWithMessage("violation differs from expected")
-                .that(messages.first().getViolation())
+                .that(messages.getFirst().getViolation())
                 .isEqualTo("This is a custom violation with TestParam.");
     }
 
@@ -122,16 +123,28 @@ public class AbstractViolationReporterTest {
         config.addMessage("msgKey", "This is a custom violation {0.");
         emptyCheck.configure(config);
 
-        try {
-            emptyCheck.log(1, "msgKey", "TestParam");
-            assertWithMessage("exception expected")
-                    .fail();
-        }
-        catch (IllegalArgumentException exc) {
-            assertWithMessage("Error violation is unexpected")
-                    .that(exc.getMessage())
-                    .isEqualTo("Unmatched braces in the pattern.");
-        }
+        final IllegalArgumentException exc =
+                getExpectedThrowable(IllegalArgumentException.class, () -> {
+                    emptyCheck.log(1, "msgKey", "TestParam");
+                }, "exception expected");
+        assertWithMessage("Error violation is unexpected")
+                .that(exc.getMessage())
+                .isEqualTo("Unmatched braces in the pattern.");
+    }
+
+    @Test
+    public void testSetSeverity() throws Exception {
+        final DefaultConfiguration config = createModuleConfig(EmptyCheck.class);
+        final String severity = "warning";
+        config.addProperty("severity", severity);
+        emptyCheck.configure(config);
+
+        assertWithMessage("Invalid severity level")
+                .that(emptyCheck.getSeverityLevel())
+                .isEqualTo(SeverityLevel.WARNING);
+        assertWithMessage("Invalid severity")
+                .that(emptyCheck.getSeverity())
+                .isEqualTo(severity);
     }
 
     public static class EmptyCheck extends AbstractCheck {

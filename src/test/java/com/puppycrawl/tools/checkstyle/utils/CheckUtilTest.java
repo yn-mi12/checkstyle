@@ -25,6 +25,7 @@ import static com.puppycrawl.tools.checkstyle.checks.coding.MultipleVariableDecl
 import static com.puppycrawl.tools.checkstyle.checks.coding.NestedIfDepthCheck.MSG_KEY;
 import static com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck.MSG_EXPECTED_TAG;
 import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.findTokenInAstByPredicate;
+import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.getExpectedThrowable;
 import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.isUtilsClassHasPrivateConstructor;
 
 import java.nio.file.Path;
@@ -118,18 +119,16 @@ public class CheckUtilTest extends AbstractModuleTestSupport {
         final DetailAstImpl modifiers = new DetailAstImpl();
         modifiers.setType(TokenTypes.METHOD_DEF);
 
-        try {
-            CheckUtil.getAccessModifierFromModifiersToken(modifiers);
-            assertWithMessage("%s was expected.", IllegalArgumentException.class.getSimpleName())
-                .fail();
-        }
-        catch (IllegalArgumentException exc) {
-            final String expectedExceptionMsg = "expected non-null AST-token with type 'MODIFIERS'";
-            final String actualExceptionMsg = exc.getMessage();
-            assertWithMessage("Invalid exception message")
-                .that(actualExceptionMsg)
-                .isEqualTo(expectedExceptionMsg);
-        }
+        final IllegalArgumentException exc =
+            getExpectedThrowable(IllegalArgumentException.class, () -> {
+                CheckUtil.getAccessModifierFromModifiersToken(modifiers);
+            });
+
+        final String expectedExceptionMsg = "expected non-null AST-token with type 'MODIFIERS'";
+        final String actualExceptionMsg = exc.getMessage();
+        assertWithMessage("Invalid exception message")
+            .that(actualExceptionMsg)
+            .isEqualTo(expectedExceptionMsg);
     }
 
     @Test
@@ -318,7 +317,7 @@ public class CheckUtilTest extends AbstractModuleTestSupport {
             .isEqualTo(8.0);
         assertWithMessage("Invalid parse result")
             .that(CheckUtil.parseDouble("-21474836480", TokenTypes.NUM_LONG))
-            .isEqualTo(-2.147_483_648E10);
+            .isEqualTo(-2.147_483_648e10);
         assertWithMessage("Invalid parse result")
             .that(CheckUtil.parseDouble("-2", TokenTypes.NUM_INT))
             .isEqualTo(-2);
@@ -330,7 +329,7 @@ public class CheckUtilTest extends AbstractModuleTestSupport {
             .isEqualTo(2915.0);
         assertWithMessage("Invalid parse result")
             .that(CheckUtil.parseDouble("21474836470", TokenTypes.NUM_LONG))
-            .isEqualTo(2.147_483_647E10);
+            .isEqualTo(2.147_483_647e10);
         assertWithMessage("Invalid parse result")
             .that(CheckUtil.parseDouble("073l", TokenTypes.NUM_LONG))
             .isEqualTo(59.0);
@@ -392,7 +391,7 @@ public class CheckUtilTest extends AbstractModuleTestSupport {
     @Test
     public void testJavaDocMethod2() throws Exception {
         final String[] expected = {
-            "14:25: " + getCheckMessage(JavadocMethodCheck.class,
+            "20:25: " + getCheckMessage(JavadocMethodCheck.class,
                   MSG_EXPECTED_TAG, "@param", "i"),
         };
         verifyWithInlineConfigParser(
@@ -402,7 +401,7 @@ public class CheckUtilTest extends AbstractModuleTestSupport {
     @Test
     public void testJavadoc() throws Exception {
         final String[] expected = {
-            "25:39: " + getCheckMessage(JavadocMethodCheck.class,
+            "26:39: " + getCheckMessage(JavadocMethodCheck.class,
                   MSG_EXPECTED_TAG, "@param", "i"),
         };
         verifyWithInlineConfigParser(

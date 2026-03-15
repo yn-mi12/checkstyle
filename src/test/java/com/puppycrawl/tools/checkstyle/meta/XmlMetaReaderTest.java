@@ -22,6 +22,7 @@ package com.puppycrawl.tools.checkstyle.meta;
 import static com.google.common.truth.Truth.assertThat;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -40,20 +41,20 @@ public class XmlMetaReaderTest extends AbstractPathTestSupport {
 
     @Test
     public void test() {
-        assertThat(XmlMetaReader.readAllModulesIncludingThirdPartyIfAny()).hasSize(212);
+        assertThat(XmlMetaReader.readAllModulesIncludingThirdPartyIfAny()).hasSize(218);
     }
 
     @Test
     public void testDuplicatePackage() {
         assertThat(XmlMetaReader
                     .readAllModulesIncludingThirdPartyIfAny("com.puppycrawl.tools.checkstyle.meta"))
-                .hasSize(212);
+                .hasSize(218);
     }
 
     @Test
     public void testBadPackage() {
         assertThat(XmlMetaReader.readAllModulesIncludingThirdPartyIfAny("DOES.NOT.EXIST"))
-                .hasSize(212);
+                .hasSize(218);
     }
 
     @Test
@@ -67,10 +68,10 @@ public class XmlMetaReaderTest extends AbstractPathTestSupport {
             assertThat(result.getName()).isEqualTo("InputCheck");
             final List<String> violationMessageKeys = result.getViolationMessageKeys();
             assertThat(violationMessageKeys).hasSize(1);
-            assertThat(violationMessageKeys.get(0)).isEqualTo("test.key");
+            assertThat(violationMessageKeys.getFirst()).isEqualTo("test.key");
             final List<ModulePropertyDetails> props = result.getProperties();
             assertThat(props).hasSize(2);
-            final ModulePropertyDetails prop1 = props.get(0);
+            final ModulePropertyDetails prop1 = props.getFirst();
             checkProperty(prop1, "propertyOne", "java.lang.String",
                 "propertyOneDefaultValue",
                 "Property wrapped\n            description.");
@@ -95,7 +96,7 @@ public class XmlMetaReaderTest extends AbstractPathTestSupport {
             assertThat(result.getName()).isEqualTo("InputCheckNoProps");
             final List<String> violationMessageKeys = result.getViolationMessageKeys();
             assertThat(violationMessageKeys).hasSize(2);
-            assertThat(violationMessageKeys.get(0)).isEqualTo("test.key1");
+            assertThat(violationMessageKeys.getFirst()).isEqualTo("test.key1");
             assertThat(violationMessageKeys.get(1)).isEqualTo("test.key2");
             assertThat(result.getProperties()).isEmpty();
         }
@@ -113,7 +114,7 @@ public class XmlMetaReaderTest extends AbstractPathTestSupport {
             assertThat(result.getViolationMessageKeys()).isEmpty();
             final List<ModulePropertyDetails> props = result.getProperties();
             assertThat(props).hasSize(1);
-            final ModulePropertyDetails prop1 = props.get(0);
+            final ModulePropertyDetails prop1 = props.getFirst();
             checkProperty(prop1, "propertyOne", "java.util.regex.Pattern",
                 "propertyDefaultValue", "Property description.");
             assertThat(prop1.getValidationType()).isNull();
@@ -133,7 +134,7 @@ public class XmlMetaReaderTest extends AbstractPathTestSupport {
             assertThat(result.getViolationMessageKeys()).isEmpty();
             final List<ModulePropertyDetails> props = result.getProperties();
             assertThat(props).hasSize(1);
-            final ModulePropertyDetails prop1 = props.get(0);
+            final ModulePropertyDetails prop1 = props.getFirst();
             assertThat(prop1.getName()).isEqualTo("fileNamePattern");
             assertThat(prop1.getType()).isEqualTo("java.util.regex.Pattern");
             assertThat(prop1.getDefaultValue()).isNull();
@@ -145,7 +146,7 @@ public class XmlMetaReaderTest extends AbstractPathTestSupport {
 
     @Test
     public void testReadXmlMetaModuleTypeNull() throws Exception {
-        try (InputStream is = IOUtils.toInputStream("", "UTF-8")) {
+        try (InputStream is = IOUtils.toInputStream("", StandardCharsets.UTF_8)) {
             assertThat(XmlMetaReader.read(is, null)).isNull();
         }
     }

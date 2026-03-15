@@ -19,8 +19,8 @@
 
 package com.puppycrawl.tools.checkstyle.checks.coding;
 
-import static com.google.common.truth.Truth.assertWithMessage;
 import static com.puppycrawl.tools.checkstyle.checks.coding.FinalLocalVariableCheck.MSG_KEY;
+import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.getExpectedThrowable;
 
 import org.junit.jupiter.api.Test;
 
@@ -251,13 +251,8 @@ public class FinalLocalVariableCheckTest
         final DetailAstImpl lambdaAst = new DetailAstImpl();
         lambdaAst.setType(TokenTypes.LAMBDA);
 
-        try {
-            check.visitToken(lambdaAst);
-            assertWithMessage("IllegalStateException is expected").fail();
-        }
-        catch (IllegalStateException exc) {
-            // it is OK
-        }
+        getExpectedThrowable(IllegalStateException.class,
+                () -> check.visitToken(lambdaAst));
     }
 
     @Test
@@ -395,11 +390,11 @@ public class FinalLocalVariableCheckTest
     @Test
     public void test() throws Exception {
         final String[] expected = {
-            "20:17: " + getCheckMessage(MSG_KEY, "start"),
-            "22:17: " + getCheckMessage(MSG_KEY, "end"),
-            "40:38: " + getCheckMessage(MSG_KEY, "list"),
-            "43:38: " + getCheckMessage(MSG_KEY, "forEach"),
-            "45:38: " + getCheckMessage(MSG_KEY, "body"),
+            "22:17: " + getCheckMessage(MSG_KEY, "start"),
+            "24:17: " + getCheckMessage(MSG_KEY, "end"),
+            "42:38: " + getCheckMessage(MSG_KEY, "list"),
+            "45:38: " + getCheckMessage(MSG_KEY, "forEach"),
+            "47:38: " + getCheckMessage(MSG_KEY, "body"),
         };
         verifyWithInlineConfigParser(
             getPath("InputFinalLocalVariable3.java"),

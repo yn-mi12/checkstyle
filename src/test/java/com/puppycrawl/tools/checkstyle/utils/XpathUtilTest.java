@@ -21,6 +21,7 @@ package com.puppycrawl.tools.checkstyle.utils;
 
 import static com.google.common.truth.Truth.assertWithMessage;
 import static com.puppycrawl.tools.checkstyle.AbstractPathTestSupport.addEndOfLine;
+import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.getExpectedThrowable;
 import static com.puppycrawl.tools.checkstyle.internal.utils.TestUtil.isUtilsClassHasPrivateConstructor;
 import static com.puppycrawl.tools.checkstyle.utils.XpathUtil.getTextAttributeValue;
 
@@ -105,13 +106,13 @@ public class XpathUtilTest {
         final File file = new File(tempFolder, uniqueFileName);
         Files.writeString(file.toPath(), fileContent, StandardCharsets.UTF_8);
         final String expected = addEndOfLine(
-            "COMPILATION_UNIT -> COMPILATION_UNIT [1:0]",
-            "`--CLASS_DEF -> CLASS_DEF [1:0]",
-            "    `--OBJBLOCK -> OBJBLOCK [1:11]",
-            "        |--METHOD_DEF -> METHOD_DEF [1:13]",
-            "        |   `--SLIST -> { [1:34]",
-            "        |       |--VARIABLE_DEF -> VARIABLE_DEF [1:35]",
-            "        |       |   |--IDENT -> a [1:39]");
+            "COMPILATION_UNIT -> COMPILATION_UNIT [1:1]",
+            "`--CLASS_DEF -> CLASS_DEF [1:1]",
+            "    `--OBJBLOCK -> OBJBLOCK [1:12]",
+            "        |--METHOD_DEF -> METHOD_DEF [1:14]",
+            "        |   `--SLIST -> { [1:35]",
+            "        |       |--VARIABLE_DEF -> VARIABLE_DEF [1:36]",
+            "        |       |   |--IDENT -> a [1:40]");
         final String result = XpathUtil.printXpathBranch(
             "//CLASS_DEF//METHOD_DEF//VARIABLE_DEF//IDENT", file);
         assertWithMessage("Branch string is different")
@@ -126,10 +127,10 @@ public class XpathUtilTest {
         final File file = new File(tempFolder, uniqueFileName);
         Files.writeString(file.toPath(), fileContent, StandardCharsets.UTF_8);
         final String expected = addEndOfLine(
-            "COMPILATION_UNIT -> COMPILATION_UNIT [1:0]",
-            "`--CLASS_DEF -> CLASS_DEF [1:0]",
-            "    `--OBJBLOCK -> OBJBLOCK [1:11]",
-            "        |--BLOCK_COMMENT_BEGIN -> /* [1:13]");
+            "COMPILATION_UNIT -> COMPILATION_UNIT [1:1]",
+            "`--CLASS_DEF -> CLASS_DEF [1:1]",
+            "    `--OBJBLOCK -> OBJBLOCK [1:12]",
+            "        |--BLOCK_COMMENT_BEGIN -> /* [1:14]");
         final String result = XpathUtil.printXpathBranch(
             "//CLASS_DEF//BLOCK_COMMENT_BEGIN", file);
         assertWithMessage("Branch string is different")
@@ -144,21 +145,21 @@ public class XpathUtilTest {
         final File file = new File(tempFolder, uniqueFileName);
         Files.writeString(file.toPath(), fileContent, StandardCharsets.UTF_8);
         final String expected = addEndOfLine(
-            "COMPILATION_UNIT -> COMPILATION_UNIT [1:0]",
-            "`--CLASS_DEF -> CLASS_DEF [1:0]",
-            "    `--OBJBLOCK -> OBJBLOCK [1:11]",
-            "        |--METHOD_DEF -> METHOD_DEF [1:13]",
-            "        |   `--SLIST -> { [1:34]",
-            "        |       |--VARIABLE_DEF -> VARIABLE_DEF [1:35]",
-            "        |       |   |--IDENT -> a [1:39]",
+            "COMPILATION_UNIT -> COMPILATION_UNIT [1:1]",
+            "`--CLASS_DEF -> CLASS_DEF [1:1]",
+            "    `--OBJBLOCK -> OBJBLOCK [1:12]",
+            "        |--METHOD_DEF -> METHOD_DEF [1:14]",
+            "        |   `--SLIST -> { [1:35]",
+            "        |       |--VARIABLE_DEF -> VARIABLE_DEF [1:36]",
+            "        |       |   |--IDENT -> a [1:40]",
             "---------",
-            "COMPILATION_UNIT -> COMPILATION_UNIT [1:0]",
-            "`--CLASS_DEF -> CLASS_DEF [1:0]",
-            "    `--OBJBLOCK -> OBJBLOCK [1:11]",
-            "        |--METHOD_DEF -> METHOD_DEF [1:13]",
-            "        |   `--SLIST -> { [1:34]",
-            "        |       |--VARIABLE_DEF -> VARIABLE_DEF [1:46]",
-            "        |       |   |--IDENT -> b [1:50]");
+            "COMPILATION_UNIT -> COMPILATION_UNIT [1:1]",
+            "`--CLASS_DEF -> CLASS_DEF [1:1]",
+            "    `--OBJBLOCK -> OBJBLOCK [1:12]",
+            "        |--METHOD_DEF -> METHOD_DEF [1:14]",
+            "        |   `--SLIST -> { [1:35]",
+            "        |       |--VARIABLE_DEF -> VARIABLE_DEF [1:47]",
+            "        |       |   |--IDENT -> b [1:51]");
         final String result = XpathUtil.printXpathBranch(
             "//CLASS_DEF//METHOD_DEF//VARIABLE_DEF//IDENT", file);
         assertWithMessage("Branch string is different")
@@ -174,18 +175,16 @@ public class XpathUtilTest {
         Files.writeString(file.toPath(), fileContent, StandardCharsets.UTF_8);
         final String invalidXpath = "\\//CLASS_DEF"
                 + "//METHOD_DEF//VARIABLE_DEF//IDENT";
-        try {
+        final CheckstyleException exc = getExpectedThrowable(CheckstyleException.class, () -> {
             XpathUtil.printXpathBranch(invalidXpath, file);
-            assertWithMessage("Should end with exception").fail();
-        }
-        catch (CheckstyleException exc) {
-            final String expectedMessage =
-                "Error during evaluation for xpath: " + invalidXpath
-                    + ", file: " + file.getCanonicalPath();
-            assertWithMessage("Exception message is different")
-                .that(exc.getMessage())
-                .isEqualTo(expectedMessage);
-        }
+        });
+
+        final String expectedMessage =
+            "Error during evaluation for xpath: " + invalidXpath
+                + ", file: " + file.getCanonicalPath();
+        assertWithMessage("Exception message is different")
+            .that(exc.getMessage())
+            .isEqualTo(expectedMessage);
     }
 
     @Test
@@ -201,7 +200,7 @@ public class XpathUtilTest {
                 .that(children)
                 .hasSize(1);
         assertWithMessage("Node depth should be 1")
-                .that(children.get(0).getDepth())
+                .that(children.getFirst().getDepth())
                 .isEqualTo(1);
     }
 

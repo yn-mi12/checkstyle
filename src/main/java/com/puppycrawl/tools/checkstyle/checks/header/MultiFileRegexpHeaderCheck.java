@@ -77,6 +77,11 @@ public class MultiFileRegexpHeaderCheck
     private static final String EMPTY_LINE_PATTERN = "^$";
 
     /**
+     * Separator for multiple header file paths in the configuration and messages.
+     */
+    private static final String HEADER_FILE_SEPARATOR = ", ";
+
+    /**
      * Compiled regex pattern for a blank line.
      **/
     private static final Pattern BLANK_LINE = Pattern.compile(EMPTY_LINE_PATTERN);
@@ -113,6 +118,7 @@ public class MultiFileRegexpHeaderCheck
         }
         else {
             files = headerFiles.clone();
+            this.headerFiles = String.join(HEADER_FILE_SEPARATOR, headerFiles);
         }
 
         headerFilesMetadata.clear();
@@ -120,18 +126,6 @@ public class MultiFileRegexpHeaderCheck
         for (final String headerFile : files) {
             headerFilesMetadata.add(HeaderFileMetadata.createFromFile(headerFile));
         }
-    }
-
-    /**
-     * Returns a comma-separated string of all configured header file paths.
-     *
-     * @return A comma-separated string of all configured header file paths,
-     *         or an empty string if no header files are configured or none have valid paths.
-     */
-    public String getConfiguredHeaderPaths() {
-        return headerFilesMetadata.stream()
-                .map(HeaderFileMetadata::headerFilePath)
-                .collect(Collectors.joining(", "));
     }
 
     @Override
@@ -150,8 +144,8 @@ public class MultiFileRegexpHeaderCheck
                     .toList();
 
             if (matchResult.stream().noneMatch(MatchResult::isMatching)) {
-                final MatchResult mismatch = matchResult.get(0);
-                final String allConfiguredHeaderPaths = getConfiguredHeaderPaths();
+                final MatchResult mismatch = matchResult.getFirst();
+                final String allConfiguredHeaderPaths = headerFiles;
                 log(mismatch.lineNumber(), mismatch.messageKey(),
                         mismatch.messageArg(), allConfiguredHeaderPaths);
             }
@@ -280,7 +274,7 @@ public class MultiFileRegexpHeaderCheck
          * @return HeaderFileMetadata instance
          * @throws IllegalArgumentException if the header file is invalid or cannot be read
          */
-        public static HeaderFileMetadata createFromFile(String headerPath) {
+        /* package */ static HeaderFileMetadata createFromFile(String headerPath) {
             if (CommonUtil.isBlank(headerPath)) {
                 throw new IllegalArgumentException("Header file is not set");
             }
@@ -375,7 +369,7 @@ public class MultiFileRegexpHeaderCheck
          *
          * @return a matching result
          */
-        public static MatchResult matching() {
+        /* package */ static MatchResult matching() {
             return new MatchResult(true, 0, null, null);
         }
 
@@ -387,7 +381,7 @@ public class MultiFileRegexpHeaderCheck
          * @param messageArg the argument for the message
          * @return a mismatch result
          */
-        public static MatchResult mismatch(int lineNumber, String messageKey,
+        /* package */ static MatchResult mismatch(int lineNumber, String messageKey,
                                            String messageArg) {
             return new MatchResult(false, lineNumber, messageKey, messageArg);
         }

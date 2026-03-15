@@ -19,7 +19,6 @@
 
 package com.puppycrawl.tools.checkstyle.filters;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,6 +35,7 @@ import com.puppycrawl.tools.checkstyle.XdocsPropertyType;
 import com.puppycrawl.tools.checkstyle.api.FileContents;
 import com.puppycrawl.tools.checkstyle.api.TextBlock;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
+import com.puppycrawl.tools.checkstyle.utils.WeakReferenceHolder;
 
 /**
  * <div>
@@ -51,7 +51,7 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  *
  * <p>
  * Attention: This filter may only be specified within the TreeWalker module
- * ({@code &lt;module name="TreeWalker"/&gt;}) and only applies to checks which are also
+ * ({@code <module name="TreeWalker"/>}) and only applies to checks which are also
  * defined within this module. To filter non-TreeWalker checks like {@code RegexpSingleline},
  * a
  * <a href="https://checkstyle.org/filters/suppresswithplaintextcommentfilter.html">
@@ -83,7 +83,17 @@ public class SuppressWithNearbyCommentFilter
     /** Tagged comments. */
     private final List<Tag> tags = new ArrayList<>();
 
-    /** Control whether to check C style comments ({@code &#47;* ... *&#47;}). */
+    /**
+     * References the current FileContents for this filter.
+     * Since this is a weak reference to the FileContents, the FileContents
+     * can be reclaimed as soon as the strong references in TreeWalker
+     * are reassigned to the next FileContents, at which time filtering for
+     * the current FileContents is finished.
+     */
+    private final WeakReferenceHolder<FileContents> fileContentsHolder =
+            new WeakReferenceHolder<>();
+
+    /** Control whether to check C style comments (&#47;* ... *&#47;). */
     private boolean checkC = true;
 
     /** Control whether to check C++ style comments ({@code //}). */
@@ -113,15 +123,6 @@ public class SuppressWithNearbyCommentFilter
     private String influenceFormat = DEFAULT_INFLUENCE_FORMAT;
 
     /**
-     * References the current FileContents for this filter.
-     * Since this is a weak reference to the FileContents, the FileContents
-     * can be reclaimed as soon as the strong references in TreeWalker
-     * are reassigned to the next FileContents, at which time filtering for
-     * the current FileContents is finished.
-     */
-    private WeakReference<FileContents> fileContentsReference = new WeakReference<>(null);
-
-    /**
      * Setter to specify comment pattern to trigger filter to begin suppression.
      *
      * @param pattern a pattern.
@@ -129,24 +130,6 @@ public class SuppressWithNearbyCommentFilter
      */
     public final void setCommentFormat(Pattern pattern) {
         commentFormat = pattern;
-    }
-
-    /**
-     * Returns FileContents for this filter.
-     *
-     * @return the FileContents for this filter.
-     */
-    private FileContents getFileContents() {
-        return fileContentsReference.get();
-    }
-
-    /**
-     * Set the FileContents for this filter.
-     *
-     * @param fileContents the FileContents for this filter.
-     */
-    private void setFileContents(FileContents fileContents) {
-        fileContentsReference = new WeakReference<>(fileContents);
     }
 
     /**
@@ -193,17 +176,17 @@ public class SuppressWithNearbyCommentFilter
     /**
      * Setter to control whether to check C++ style comments ({@code //}).
      *
-     * @param checkCpp {@code true} if C++ comments are checked.
+     * @param checkCppComments {@code true} if C++ comments are checked.
      * @since 5.0
      */
     // -@cs[AbbreviationAsWordInName] We can not change it as,
     // check's property is a part of API (used in configurations).
-    public void setCheckCPP(boolean checkCpp) {
-        checkCPP = checkCpp;
+    public void setCheckCPP(boolean checkCppComments) {
+        checkCPP = checkCppComments;
     }
 
     /**
-     * Setter to control whether to check C style comments ({@code &#47;* ... *&#47;}).
+     * Setter to control whether to check C style comments (&#47;* ... *&#47;).
      *
      * @param checkC {@code true} if C comments are checked.
      * @since 5.0
@@ -222,14 +205,7 @@ public class SuppressWithNearbyCommentFilter
         boolean accepted = true;
 
         if (event.violation() != null) {
-            // Lazy update. If the first event for the current file, update file
-            // contents and tag suppressions
-            final FileContents currentContents = event.fileContents();
-
-            if (getFileContents() != currentContents) {
-                setFileContents(currentContents);
-                tagSuppressions();
-            }
+            fileContentsHolder.lazyUpdate(event.fileContents(), this::tagSuppressions);
             if (matchesTag(event)) {
                 accepted = false;
             }
@@ -260,7 +236,7 @@ public class SuppressWithNearbyCommentFilter
      */
     private void tagSuppressions() {
         tags.clear();
-        final FileContents contents = getFileContents();
+        final FileContents contents = fileContentsHolder.get();
         if (checkCPP) {
             tagSuppressions(contents.getSingleLineComments().values());
         }
@@ -418,8 +394,8 @@ public class SuppressWithNearbyCommentFilter
                 return false;
             }
             final Tag tag = (Tag) other;
-            return Objects.equals(firstLine, tag.firstLine)
-                    && Objects.equals(lastLine, tag.lastLine)
+            return firstLine == tag.firstLine
+                    && lastLine == tag.lastLine
                     && Objects.equals(text, tag.text)
                     && Objects.equals(tagCheckRegexp, tag.tagCheckRegexp)
                     && Objects.equals(tagMessageRegexp, tag.tagMessageRegexp)
@@ -439,7 +415,7 @@ public class SuppressWithNearbyCommentFilter
          * @param event the {@code TreeWalkerAuditEvent} to check.
          * @return true if the source of event matches the text of this tag.
          */
-        public boolean isMatch(TreeWalkerAuditEvent event) {
+        /* package */ boolean isMatch(TreeWalkerAuditEvent event) {
             return isInScopeOfSuppression(event)
                     && isCheckMatch(event)
                     && isIdMatch(event)

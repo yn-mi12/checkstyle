@@ -19,9 +19,10 @@
 
 package com.puppycrawl.tools.checkstyle.filters;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -41,18 +42,14 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 /**
  * <div>
  * Filter {@code SuppressWithPlainTextCommentFilter} uses plain text to suppress
- * audit events. The filter can be used only to suppress audit events received
- * from the checks which implement FileSetCheck interface. In other words, the
- * checks which have Checker as a parent module. The filter knows nothing about
- * AST, it treats only plain text comments and extracts the information required
- * for suppression from the plain text comments. Currently, the filter supports
- * only single-line comments.
+ * audit events. The filter knows nothing about AST, it treats only plain text
+ * comments and extracts the information required for suppression from the plain
+ * text comments. Currently, the filter supports only single-line comments.
  * </div>
  *
  * <p>
  * Please, be aware of the fact that, it is not recommended to use the filter
- * for Java code anymore, however you still are able to use it to suppress audit
- * events received from the checks which implement FileSetCheck interface.
+ * for Java code anymore.
  * </p>
  *
  * <p>
@@ -77,7 +74,7 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
  * </p>
  *
  * <p>
- * SuppressionWithPlainTextCommentFilter can suppress Checks that have Treewalker or
+ * SuppressWithPlainTextCommentFilter can suppress Checks that have Treewalker or
  * Checker as parent module.
  * </p>
  *
@@ -201,13 +198,13 @@ public class SuppressWithPlainTextCommentFilter extends AbstractAutomaticBean im
      * @throws IllegalStateException if the file could not be read.
      */
     private static FileText getFileText(String fileName) {
-        final File file = new File(fileName);
+        final Path path = Path.of(fileName);
         FileText result = null;
 
         // some violations can be on a directory, instead of a file
-        if (!file.isDirectory()) {
+        if (!Files.isDirectory(path)) {
             try {
-                result = new FileText(file, StandardCharsets.UTF_8.name());
+                result = new FileText(path.toFile(), StandardCharsets.UTF_8.name());
             }
             catch (IOException exc) {
                 throw new IllegalStateException("Cannot read source file: " + fileName, exc);
@@ -371,7 +368,7 @@ public class SuppressWithPlainTextCommentFilter extends AbstractAutomaticBean im
                 return false;
             }
             final Suppression suppression = (Suppression) other;
-            return Objects.equals(lineNo, suppression.lineNo)
+            return lineNo == suppression.lineNo
                     && Objects.equals(suppressionType, suppression.suppressionType)
                     && Objects.equals(eventSourceRegexp, suppression.eventSourceRegexp)
                     && Objects.equals(eventMessageRegexp, suppression.eventMessageRegexp)

@@ -41,6 +41,7 @@ import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.FileContents;
 import com.puppycrawl.tools.checkstyle.api.FileText;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
 
 /**
  * Ensures xdocs Java examples for the same check differ only by comments.
@@ -93,32 +94,20 @@ public class XdocsExamplesAstConsistencyTest {
             "checks/blocks/emptycatchblock/Example4",
             "checks/blocks/emptycatchblock/Example5",
             "checks/blocks/needbraces/Example6",
-            "checks/blocks/rightcurly/Example2",
-            "checks/blocks/rightcurly/Example3",
-            "checks/blocks/rightcurly/Example4",
-            "checks/blocks/rightcurly/Example5",
-            "checks/coding/constructorsdeclarationgrouping/Example2",
-            "checks/coding/covariantequals/Example2",
-            "checks/coding/hiddenfield/Example7",
-            "checks/coding/illegaltoken/Example2",
             "checks/coding/illegaltokentext/Example3",
             "checks/coding/illegaltokentext/Example4",
-            "checks/coding/innerassignment/Example2",
+            "checks/coding/illegalsymbol/Example4",
+            "checks/coding/illegaltokentext/Example5",
             "checks/coding/matchxpath/Example2",
             "checks/coding/matchxpath/Example3",
             "checks/coding/matchxpath/Example4",
             "checks/coding/matchxpath/Example5",
-            "checks/coding/missingswitchdefault/Example2",
-            "checks/coding/missingswitchdefault/Example3",
+            "checks/coding/matchxpath/Example6",
             "checks/coding/packagedeclaration/Example2",
             "checks/coding/requirethis/Example5",
             "checks/coding/requirethis/Example6",
-            "checks/coding/textblockgooglestyleformatting/Example2",
-            "checks/coding/textblockgooglestyleformatting/Example3",
-            "checks/coding/textblockgooglestyleformatting/Example4",
             "checks/coding/unnecessaryparentheses/Example2",
             "checks/coding/unnecessaryparentheses/Example3",
-            "checks/coding/unnecessarysemicoloninenumeration/Example2",
             "checks/coding/variabledeclarationusagedistance/Example2",
             "checks/descendanttoken/Example10",
             "checks/descendanttoken/Example11",
@@ -127,14 +116,13 @@ public class XdocsExamplesAstConsistencyTest {
             "checks/descendanttoken/Example14",
             "checks/descendanttoken/Example15",
             "checks/descendanttoken/Example16",
+            "checks/descendanttoken/Example17",
             "checks/descendanttoken/Example4",
             "checks/descendanttoken/Example5",
             "checks/descendanttoken/Example6",
             "checks/descendanttoken/Example7",
             "checks/descendanttoken/Example8",
             "checks/descendanttoken/Example9",
-            "checks/design/onetoplevelclass/Example2",
-            "checks/design/onetoplevelclass/Example3",
             "checks/design/visibilitymodifier/Example11",
             "checks/design/visibilitymodifier/Example12",
             "checks/finalparameters/Example4",
@@ -180,8 +168,11 @@ public class XdocsExamplesAstConsistencyTest {
             "checks/javadoc/javadocleadingasteriskalign/Example3",
             "checks/javadoc/javadocmethod/Example7",
             "checks/javadoc/javadocmethod/Example8",
+            "checks/javadoc/javadocstyle/Example7",
             "checks/javadoc/javadoctagcontinuationindentation/Example4",
             "checks/javadoc/javadocvariable/Example5",
+            "checks/javadoc/missingjavadoctype/Example4",
+            "checks/javadoc/missingjavadoctype/Example5",
             "checks/metrics/classdataabstractioncoupling/Example11",
             "checks/metrics/classdataabstractioncoupling/Example2",
             "checks/metrics/classdataabstractioncoupling/Example3",
@@ -205,12 +196,6 @@ public class XdocsExamplesAstConsistencyTest {
             "checks/naming/localvariablename/Example5",
             "checks/naming/membername/Example2",
             "checks/naming/membername/Example3",
-            "checks/naming/methodname/Example2",
-            "checks/naming/methodname/Example3",
-            "checks/naming/methodname/Example4",
-            "checks/naming/methodname/Example5",
-            "checks/naming/methodname/Example6",
-            "checks/naming/methodname/Example7",
             "checks/naming/parametername/Example2",
             "checks/naming/parametername/Example3",
             "checks/naming/parametername/Example4",
@@ -219,10 +204,6 @@ public class XdocsExamplesAstConsistencyTest {
             "checks/naming/typename/Example2",
             "checks/naming/typename/Example3",
             "checks/naming/typename/Example4",
-            "checks/outertypefilename/Example2",
-            "checks/outertypefilename/Example3",
-            "checks/outertypefilename/Example4",
-            "checks/outertypefilename/Example5",
             "checks/regexp/regexp/Example1",
             "checks/regexp/regexp/Example10",
             "checks/regexp/regexp/Example11",
@@ -237,6 +218,7 @@ public class XdocsExamplesAstConsistencyTest {
             "checks/regexp/regexpsingleline/Example2",
             "checks/regexp/regexpsingleline/Example3",
             "checks/regexp/regexpsingleline/Example4",
+            "checks/regexp/regexpmultiline/Example5",
             "checks/sizes/lambdabodylength/Example2",
             "checks/sizes/linelength/Example6",
             "checks/trailingcomment/Example2",
@@ -244,7 +226,6 @@ public class XdocsExamplesAstConsistencyTest {
             "checks/trailingcomment/Example4",
             "checks/trailingcomment/Example5",
             "checks/trailingcomment/Example6",
-            "checks/whitespace/emptyforinitializerpad/Example2",
             "checks/whitespace/nolinewrap/Example2",
             "checks/whitespace/nolinewrap/Example3",
             "checks/whitespace/nolinewrap/Example4",
@@ -268,6 +249,7 @@ public class XdocsExamplesAstConsistencyTest {
             "checks/whitespace/whitespacearound/Example7",
             "checks/whitespace/whitespacearound/Example8",
             "checks/whitespace/whitespacearound/Example9",
+            "checks/whitespace/whitespacearound/Example11",
             "filters/suppressionfilter/Example2",
             "filters/suppressionfilter/Example3",
             "filters/suppressionfilter/Example4",
@@ -306,15 +288,17 @@ public class XdocsExamplesAstConsistencyTest {
             "filters/suppresswithnearbycommentfilter/Example6",
             "filters/suppresswithnearbycommentfilter/Example7",
             "filters/suppresswithnearbycommentfilter/Example8",
+            "filters/suppresswithnearbytextfilter/Example2",
             "filters/suppresswithnearbytextfilter/Example3",
             "filters/suppresswithnearbytextfilter/Example4",
             "filters/suppresswithnearbytextfilter/Example5",
             "filters/suppresswithnearbytextfilter/Example6",
+            "filters/suppresswithnearbytextfilter/Example7",
             "filters/suppresswithnearbytextfilter/Example8",
             "filters/suppresswithnearbytextfilter/Example9",
             "filters/suppresswithplaintextcommentfilter/Example5",
             "filters/suppresswithplaintextcommentfilter/Example9"
-    );
+            );
 
     /**
      * Tests that examples with the same code structure maintain consistency.
@@ -348,7 +332,7 @@ public class XdocsExamplesAstConsistencyTest {
 
             builder.append("Found ")
                     .append(violations.size())
-                    .append("example files with AST mismatches.\n\n");
+                    .append(" example files with AST mismatches.\n\n");
 
             for (String violation : violations) {
                 builder.append(violation)
@@ -356,7 +340,7 @@ public class XdocsExamplesAstConsistencyTest {
             }
 
             builder.append("If these examples have different code intent, "
-                    + "add them to INDEPENDENT_EXAMPLES:\n");
+                    + "add them to SUPPRESSED_EXAMPLES:\n");
 
             for (String violation : violations) {
                 final String pattern = extractIndependentPattern(violation);
@@ -511,6 +495,28 @@ public class XdocsExamplesAstConsistencyTest {
     }
 
     /**
+     * Checks whether none of the examples in this directory define any module properties.
+     * When a module has no configurable properties, its examples may intentionally use
+     * very different code to demonstrate different behaviours, so consistency checking
+     * is not meaningful.
+     *
+     * @param examples the list of example files in the directory
+     * @return true if no example file contains a {@code <property} element in its XML config
+     * @throws IOException if an I/O error occurs reading an example file
+     */
+    private static boolean isModuleWithNoProperties(List<Path> examples) throws IOException {
+        boolean result = true;
+        for (Path example : examples) {
+            final String content = Files.readString(example);
+            if (content.contains("<property ")) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
      * Checks examples in a directory. Non-independent examples must match.
      *
      * @param dir the directory containing example files
@@ -557,22 +563,104 @@ public class XdocsExamplesAstConsistencyTest {
     private static List<String> compareExamples(Path dir, List<Path> examples)
             throws IOException {
         final List<String> violations = new ArrayList<>();
-        final String relativePath = getRelativePath(dir);
 
-        final List<Path> regularExamples = new ArrayList<>();
+        if (!isModuleWithNoProperties(examples)) {
+            final String relativePath = getRelativePath(dir);
 
-        for (Path example : examples) {
-            final String fileName = example.getFileName().toString();
-            if (!isExampleIndependent(relativePath, fileName)) {
-                regularExamples.add(example);
+            final List<Path> regularExamples = new ArrayList<>();
+
+            for (Path example : examples) {
+                final String fileName = example.getFileName().toString();
+                if (!isExampleIndependent(relativePath, fileName)) {
+                    regularExamples.add(example);
+                }
+            }
+
+            if (regularExamples.size() > 1) {
+                violations.addAll(validateExamplesByConstructorPresence(dir, regularExamples));
             }
         }
 
-        if (regularExamples.size() > 1) {
-            violations.addAll(validateAllMatch(dir, regularExamples));
+        return violations;
+    }
+
+    /**
+     * Validates examples by comparing files with and without constructors separately.
+     *
+     * @param dir the directory containing examples
+     * @param examples the list of examples that must be validated
+     * @return list of violation messages for mismatches
+     * @throws IOException if an I/O error occurs
+     */
+    private static List<String> validateExamplesByConstructorPresence(Path dir, List<Path> examples)
+            throws IOException {
+        final List<String> violations = new ArrayList<>();
+        final List<Path> constructorExamples = new ArrayList<>();
+        final List<Path> nonConstructorExamples = new ArrayList<>();
+
+        for (Path example : examples) {
+            if (containsConstructorDefinition(example)) {
+                constructorExamples.add(example);
+            }
+            else {
+                nonConstructorExamples.add(example);
+            }
+        }
+
+        if (nonConstructorExamples.size() > 1) {
+            violations.addAll(validateAllMatch(dir, nonConstructorExamples));
+        }
+        if (constructorExamples.size() > 1) {
+            violations.addAll(validateAllMatch(dir, constructorExamples));
         }
 
         return violations;
+    }
+
+    /**
+     * Checks whether an example contains at least one constructor definition.
+     *
+     * @param example the example file path
+     * @return true if the parsed xdoc section contains a constructor definition
+     * @throws IOException if an I/O error occurs
+     */
+    private static boolean containsConstructorDefinition(Path example) throws IOException {
+        final String xdocSection = extractXdocSection(example);
+        boolean result;
+        try {
+            final DetailAST ast = parseContent(xdocSection);
+            result = ast != null && hasDescendantOfType(ast, TokenTypes.CTOR_DEF);
+        }
+        catch (CheckstyleException exception) {
+            result = false;
+        }
+
+        return result;
+    }
+
+    /**
+     * Checks whether an AST contains a descendant of the given token type.
+     *
+     * @param ast the AST root to inspect
+     * @param tokenType the token type to find
+     * @return true if a matching node is found
+     */
+    private static boolean hasDescendantOfType(DetailAST ast, int tokenType) {
+        boolean result = false;
+        if (ast.getType() == tokenType) {
+            result = true;
+        }
+        else {
+            for (DetailAST child = ast.getFirstChild(); child != null;
+                 child = child.getNextSibling()) {
+                if (hasDescendantOfType(child, tokenType)) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -586,7 +674,7 @@ public class XdocsExamplesAstConsistencyTest {
     private static List<String> validateAllMatch(Path dir, List<Path> examples)
             throws IOException {
         final List<String> violations = new ArrayList<>();
-        final Path reference = examples.get(0);
+        final Path reference = examples.getFirst();
         final String referenceXdocSection = extractXdocSection(reference);
 
         try {
@@ -724,7 +812,8 @@ public class XdocsExamplesAstConsistencyTest {
             result = null;
         }
         else {
-            final StructuralAstNode node = new StructuralAstNode(ast.getType());
+            final StructuralAstNode node = new StructuralAstNode(ast.getType(), ast.getText(),
+                    isClassOrConstructorName(ast));
 
             for (DetailAST child = ast.getFirstChild();
                  child != null;
@@ -754,15 +843,56 @@ public class XdocsExamplesAstConsistencyTest {
     }
 
     /**
+     * Checks if an AST node is an identifier representing class or constructor name.
+     *
+     * @param ast the AST node to check
+     * @return true if the node is a class or constructor name identifier
+     */
+    private static boolean isClassOrConstructorName(DetailAST ast) {
+        final DetailAST parent = ast.getParent();
+        return parent != null
+                && ast.getType() == TokenTypes.IDENT
+                && (parent.getType() == TokenTypes.CLASS_DEF
+                    || parent.getType() == TokenTypes.CTOR_DEF);
+    }
+
+    /**
      * Represents a structural AST node without comments or source positions.
      * This allows for pure structural comparison between example files.
+     * Now includes literal text values for semantic comparison.
      */
     private static final class StructuralAstNode {
         private final int type;
+        private final String text;
         private final List<StructuralAstNode> children = new ArrayList<>();
 
-        private StructuralAstNode(int type) {
+        private StructuralAstNode(int type, String text, boolean ignoreText) {
             this.type = type;
+            if (ignoreText) {
+                this.text = null;
+            }
+            else if (isLiteralToken(type)) {
+                this.text = text;
+            }
+            else {
+                this.text = null;
+            }
+        }
+
+        /**
+         * Checks if a token type represents a literal that should have its text compared.
+         *
+         * @param tokenType the token type
+         * @return true if the token represents a literal with semantic value
+         */
+        private static boolean isLiteralToken(int tokenType) {
+            return switch (tokenType) {
+                case TokenTypes.NUM_INT, TokenTypes.NUM_LONG, TokenTypes.NUM_FLOAT,
+                     TokenTypes.NUM_DOUBLE, TokenTypes.STRING_LITERAL,
+                     TokenTypes.CHAR_LITERAL, TokenTypes.LITERAL_TRUE,
+                     TokenTypes.LITERAL_FALSE, TokenTypes.LITERAL_NULL -> true;
+                default -> false;
+            };
         }
 
         private void addChild(StructuralAstNode child) {
@@ -773,8 +903,10 @@ public class XdocsExamplesAstConsistencyTest {
         public boolean equals(Object obj) {
             final boolean result;
             if (obj instanceof StructuralAstNode other) {
-                final boolean childrenEqual = children.equals(other.children);
-                result = type == other.type && childrenEqual;
+                final boolean typeMatch = type == other.type;
+                final boolean textMatch = Objects.equals(text, other.text);
+                final boolean childrenMatch = children.equals(other.children);
+                result = typeMatch && textMatch && childrenMatch;
             }
             else {
                 result = false;
@@ -784,7 +916,27 @@ public class XdocsExamplesAstConsistencyTest {
 
         @Override
         public int hashCode() {
-            return Objects.hash(type, children);
+            return Objects.hash(type, text, children);
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder(128);
+            sb.append("StructuralAstNode{type=");
+            try {
+                sb.append(TokenUtil.getTokenName(type));
+            }
+            catch (IllegalArgumentException exception) {
+                sb.append(type);
+            }
+            if (text != null) {
+                sb.append(", text='").append(text).append('\'');
+            }
+            if (!children.isEmpty()) {
+                sb.append(", children=").append(children.size());
+            }
+            sb.append('}');
+            return sb.toString();
         }
     }
 }

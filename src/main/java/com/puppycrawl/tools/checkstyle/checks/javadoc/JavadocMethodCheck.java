@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -338,12 +339,12 @@ public class JavadocMethodCheck extends AbstractCheck {
      * @return whether we should check a given node.
      */
     private boolean shouldCheck(final DetailAST ast) {
-        final AccessModifierOption surroundingAccessModifier = CheckUtil
+        final Optional<AccessModifierOption> surroundingAccessModifier = CheckUtil
                 .getSurroundingAccessModifier(ast);
         final AccessModifierOption accessModifier = CheckUtil
                 .getAccessModifierFromModifiersToken(ast);
-        return Arrays.stream(accessModifiers)
-                        .anyMatch(modifier -> modifier == surroundingAccessModifier)
+        return surroundingAccessModifier.isPresent() && Arrays.stream(accessModifiers)
+                        .anyMatch(modifier -> modifier == surroundingAccessModifier.get())
                 && Arrays.stream(accessModifiers).anyMatch(modifier -> modifier == accessModifier);
     }
 
@@ -435,7 +436,7 @@ public class JavadocMethodCheck extends AbstractCheck {
         boolean result = true;
         // Check if it contains {@inheritDoc} tag
         if (tags.size() == 1
-                && tags.get(0).isInheritDocTag()) {
+                && tags.getFirst().isInheritDocTag()) {
             // Invalid if private, a constructor, or a static method
             if (!JavadocTagInfo.INHERIT_DOC.isValidOn(ast)) {
                 log(ast, MSG_INVALID_INHERIT_DOC);
@@ -938,7 +939,7 @@ public class JavadocMethodCheck extends AbstractCheck {
                     final Token token = exceptionInfo.getName();
                     log(exceptionInfo.getAst(),
                         MSG_EXPECTED_TAG,
-                        JavadocTagInfo.THROWS.getText(), token.getText());
+                        JavadocTagInfo.THROWS.getText(), token.text());
                 });
         }
     }
@@ -952,7 +953,7 @@ public class JavadocMethodCheck extends AbstractCheck {
     private static void processThrows(Iterable<ExceptionInfo> throwsIterable,
                                       String documentedClassName) {
         for (ExceptionInfo exceptionInfo : throwsIterable) {
-            if (isClassNamesSame(exceptionInfo.getName().getText(),
+            if (isClassNamesSame(exceptionInfo.getName().text(),
                     documentedClassName)) {
                 exceptionInfo.setFound();
                 break;
@@ -968,8 +969,8 @@ public class JavadocMethodCheck extends AbstractCheck {
      * @return true is ExceptionInfo object have the same name
      */
     private static boolean isExceptionInfoSame(ExceptionInfo info1, ExceptionInfo info2) {
-        return isClassNamesSame(info1.getName().getText(),
-                                    info2.getName().getText());
+        return isClassNamesSame(info1.getName().text(),
+                                    info2.getName().text());
     }
 
     /**
@@ -990,40 +991,18 @@ public class JavadocMethodCheck extends AbstractCheck {
 
     /**
      * Contains class's {@code Token}.
+     *
+     * @param name {@code FullIdent} associated with this class.
      */
-    private static class ClassInfo {
-
-        /** {@code FullIdent} associated with this class. */
-        private final Token name;
-
-        /**
-         * Creates new instance of class information object.
-         *
-         * @param className token which represents class name.
-         * @throws IllegalArgumentException when className is nulls
-         */
-        protected ClassInfo(final Token className) {
-            name = className;
-        }
-
-        /**
-         * Gets class name.
-         *
-         * @return class name
-         */
-        public final Token getName() {
-            return name;
-        }
-
+    private record ClassInfo(Token name) {
     }
 
     /**
      * Represents text element with location in the text.
+     *
+     * @param text Token's text.
      */
-    private static final class Token {
-
-        /** Token's text. */
-        private final String text;
+    private record Token(String text) {
 
         /**
          * Converts FullIdent to Token.
@@ -1031,18 +1010,8 @@ public class JavadocMethodCheck extends AbstractCheck {
          * @param fullIdent full ident to convert.
          */
         private Token(FullIdent fullIdent) {
-            text = fullIdent.getText();
+            this(fullIdent.getText());
         }
-
-        /**
-         * Gets text of the token.
-         *
-         * @return text of the token
-         */
-        public String getText() {
-            return text;
-        }
-
     }
 
     /** Stores useful information about declared exception. */
@@ -1096,7 +1065,7 @@ public class JavadocMethodCheck extends AbstractCheck {
          * @return exception's name
          */
         private Token getName() {
-            return classInfo.getName();
+            return classInfo.name();
         }
 
     }

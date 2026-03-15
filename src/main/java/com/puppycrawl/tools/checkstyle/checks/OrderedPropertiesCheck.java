@@ -50,11 +50,13 @@ import com.puppycrawl.tools.checkstyle.api.FileText;
  *   E.g.: checkstyle/src/main/resources/com/puppycrawl/tools/checkstyle/messages.properties
  *   You may suppress warnings of this check for files that have a logical structure like
  *   build files or log4j configuration files. See SuppressionFilter.
- *   {@code
- *   &lt;suppress checks="OrderedProperties"
- *     files="log4j.properties|ResourceBundle/Bug.*.properties|logging.properties"/&gt;
- *   }
  * </p>
+ * <div class="wrapper">
+ * <pre>
+ * &lt;suppress checks="OrderedProperties"
+ *   files="log4j.properties|ResourceBundle/Bug.*.properties|logging.properties"/&gt;
+ * </pre>
+ * </div>
  *
  * <p>Known limitation: The key should not contain a newline.
  * The string compare will work, but not the line number reporting.</p>
@@ -207,9 +209,14 @@ public class OrderedPropertiesCheck extends AbstractFileSetCheck {
 
         /**
          * Returns a copy of the keys.
+         *
+         * @noinspection SynchronizedMethod
+         * @noinspectionreason SynchronizedMethod - synchronized keyword is required
+         *      to override the synchronized keys() method from Hashtable parent class,
+         *      maintaining thread-safety contract
          */
         @Override
-        public Enumeration<Object> keys() {
+        public synchronized Enumeration<Object> keys() {
             return Collections.enumeration(keyList);
         }
 

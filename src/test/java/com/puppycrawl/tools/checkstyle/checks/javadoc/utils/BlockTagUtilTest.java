@@ -42,7 +42,7 @@ public class BlockTagUtilTest {
             "/** @foo abc ",
             " * @bar def  ",
             "   @baz ghi  ",
-            " * @qux jkl",
+            " * @info jkl",
             " * @mytag",
             " */",
         };
@@ -52,7 +52,7 @@ public class BlockTagUtilTest {
             .that(tags)
             .hasSize(5);
 
-        final TagInfo tag1 = tags.get(0);
+        final TagInfo tag1 = tags.getFirst();
         assertTagEquals(tag1, "foo", "abc", 1, 4);
 
         final TagInfo tag2 = tags.get(1);
@@ -62,7 +62,7 @@ public class BlockTagUtilTest {
         assertTagEquals(tag3, "baz", "ghi", 3, 3);
 
         final TagInfo tag4 = tags.get(3);
-        assertTagEquals(tag4, "qux", "jkl", 4, 3);
+        assertTagEquals(tag4, "info", "jkl", 4, 3);
 
         final TagInfo tag5 = tags.get(4);
         assertTagEquals(tag5, "mytag", "", 5, 3);
@@ -80,7 +80,7 @@ public class BlockTagUtilTest {
             .that(tags)
             .hasSize(1);
 
-        final TagInfo tag1 = tags.get(0);
+        final TagInfo tag1 = tags.getFirst();
         assertTagEquals(tag1, "foo", "", 1, 4);
     }
 
@@ -96,10 +96,10 @@ public class BlockTagUtilTest {
             .that(tags)
             .hasSize(1);
         assertWithMessage("Invalid tag name")
-            .that(tags.get(0).getName())
+            .that(tags.getFirst().getName())
             .isEqualTo("version");
         assertWithMessage("Invalid tag value")
-            .that(tags.get(0).getValue())
+            .that(tags.getFirst().getValue())
             .isEqualTo("1.0");
     }
 
@@ -115,10 +115,10 @@ public class BlockTagUtilTest {
             .that(tags)
             .hasSize(1);
         assertWithMessage("Invalid tag name")
-            .that(tags.get(0).getName())
+            .that(tags.getFirst().getName())
             .isEqualTo("version");
         assertWithMessage("Invalid tag value")
-            .that(tags.get(0).getValue())
+            .that(tags.getFirst().getValue())
             .isEqualTo("1.0");
     }
 

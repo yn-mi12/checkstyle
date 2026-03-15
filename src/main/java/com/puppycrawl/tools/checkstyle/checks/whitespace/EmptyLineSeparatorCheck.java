@@ -20,7 +20,6 @@
 package com.puppycrawl.tools.checkstyle.checks.whitespace;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -181,7 +180,10 @@ public class EmptyLineSeparatorCheck extends AbstractCheck {
         while (nextToken != null && TokenUtil.isCommentType(nextToken.getType())) {
             nextToken = nextToken.getNextSibling();
         }
-        if (nextToken != null) {
+        if (ast.getType() == TokenTypes.PACKAGE_DEF) {
+            processPackage(ast, nextToken);
+        }
+        else if (nextToken != null) {
             checkToken(ast, nextToken);
         }
     }
@@ -199,8 +201,6 @@ public class EmptyLineSeparatorCheck extends AbstractCheck {
             case TokenTypes.VARIABLE_DEF -> processVariableDef(ast, nextToken);
 
             case TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT -> processImport(ast, nextToken);
-
-            case TokenTypes.PACKAGE_DEF -> processPackage(ast, nextToken);
 
             default -> {
                 if (nextToken.getType() == TokenTypes.RCURLY) {
@@ -388,7 +388,7 @@ public class EmptyLineSeparatorCheck extends AbstractCheck {
             final DetailAST elementAst = getViolationAstForPackage(ast);
             log(elementAst, MSG_SHOULD_BE_SEPARATED, elementAst.getText());
         }
-        else if (!hasEmptyLineAfter(ast)) {
+        else if (nextToken != null && !hasEmptyLineAfter(ast)) {
             log(nextToken, MSG_SHOULD_BE_SEPARATED, nextToken.getText());
         }
     }
@@ -505,7 +505,7 @@ public class EmptyLineSeparatorCheck extends AbstractCheck {
      * @param token DetailAST token
      */
     private void checkCommentsInsideToken(DetailAST token) {
-        final List<DetailAST> childNodes = new LinkedList<>();
+        final List<DetailAST> childNodes = new ArrayList<>();
         DetailAST childNode = token.getLastChild();
         while (childNode != null) {
             if (childNode.getType() == TokenTypes.MODIFIERS) {

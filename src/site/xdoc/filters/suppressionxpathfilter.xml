@@ -137,6 +137,11 @@
           configuration file and input files. See <a href="https://checkstyle.org/cmdline.html">here</a>
           for more details.
         </p>
+        <p>
+          Checkstyle supports XPath 3.1 or higher, for exact version please find
+          &quot;Saxon-HE&quot; version in our <a href="../project-info.html#Dependencies">dependency report</a>
+          and find related documentation at <a href="https://www.saxonica.com/welcome/welcome.xml">saxonica.com</a>.
+        </p>
       </subsection>
       <subsection name="Notes" id="SuppressionXpathFilter_Notes">
         <p>
@@ -160,7 +165,7 @@
         </p>
 
         <p>
-          A <a href="/dtds/suppressions_1_2_xpath_experimental.dtd"><em>suppressions XML
+          A <a href="/dtds/suppressions_1_2_xpath.dtd"><em>suppressions XML
           document</em></a> contains a set
           of <code>suppress</code> and <code>suppress-xpath</code> elements, where
           each <code>suppress-xpath</code> element can have the
@@ -208,6 +213,15 @@
         <p>
           ATTENTION: filtering by message is dependent on runtime locale. If project is running
           in different languages it is better to avoid filtering by message.
+        </p>
+
+        <p>
+          <b>Attention:</b> The structure of the Abstract Syntax Tree (AST) can change
+          depending on the enabled checks. If &quot;comment-aware&quot; checks (such as
+          <code>TodoComment</code>) are enabled, comment nodes are added to the AST.
+          XPath queries should be written robustly to handle the potential presence
+          of comment nodes. For example, relying on strict <code>count(*)</code>
+          checks might fail if comments are present in the code block.
         </p>
       </subsection>
       <subsection name="Properties" id="SuppressionXpathFilter_Properties">
@@ -282,8 +296,8 @@
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
   &lt;suppress-xpath checks="CyclomaticComplexity"
@@ -329,8 +343,8 @@ public class Example1 {
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
   &lt;suppress-xpath checks=".*" query="/COMPILATION_UNIT/PACKAGE_DEF"/&gt;
@@ -367,8 +381,8 @@ public class Example2 { }
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
   &lt;suppress-xpath checks=".*" query="descendant::VARIABLE_DEF[1]/.."/&gt;
@@ -415,8 +429,8 @@ public class Example3
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
   &lt;suppress-xpath checks=".*" query="//CLASS_DEF | //METHOD_DEF"/&gt;
@@ -454,8 +468,8 @@ public class Example4 {
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
   &lt;suppress-xpath checks=".*" query="//METHOD_DEF/IDENT[@text='GetSomeVar' or @text='SetSomeVar']"/&gt;
@@ -494,8 +508,8 @@ public class Example5 {
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
   &lt;suppress-xpath checks=".*" query="//CLASS_DEF[./IDENT[@text='Example6']]
@@ -540,8 +554,8 @@ public class Example6 {
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
    &lt;suppress-xpath checks="MethodName" query="//CLASS_DEF[./IDENT[@text='Main']]//*
@@ -585,8 +599,8 @@ class Main {
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
   &lt;suppress-xpath checks="RequireThis"
@@ -639,8 +653,8 @@ public class Example8 {
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
    &lt;suppress-xpath checks="IllegalThrows" query="//LITERAL_THROWS
@@ -686,8 +700,8 @@ public class Example9 {
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
     &lt;suppress-xpath checks=".*" query="//METHOD_DEF[./IDENT[@text='legacyMethod']]
@@ -766,8 +780,8 @@ CLASS_DEF -&gt; CLASS_DEF [1:0]
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
    &lt;suppress-xpath checks="." query="//VARIABLE_DEF[
@@ -811,8 +825,8 @@ public class Example11 {
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
     &lt;suppress-xpath checks="." query="//VARIABLE_DEF//NUM_INT[@text=11]"/&gt;
@@ -907,8 +921,8 @@ CLASS_DEF -&gt; CLASS_DEF [1:0]
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
    &lt;suppress-xpath checks="." query="//METHOD_DEF[
@@ -959,8 +973,8 @@ public class Example13 {
         <div class="wrapper"><pre class="prettyprint"><code class="language-xml">
 &lt;?xml version="1.0"?&gt;
 &lt;!DOCTYPE suppressions PUBLIC
-"-//Checkstyle//DTD SuppressionXpathFilter Experimental Configuration 1.2//EN"
-"https://checkstyle.org/dtds/suppressions_1_2_xpath_experimental.dtd"&gt;
+"-//Checkstyle//DTD SuppressionXpathFilter Configuration 1.2//EN"
+"https://checkstyle.org/dtds/suppressions_1_2_xpath.dtd"&gt;
 
 &lt;suppressions&gt;
    &lt;suppress-xpath checks="." query="//METHOD_DEF[.//ANNOTATION[
@@ -996,6 +1010,10 @@ public class Example14 {
           <li>
             <a href="https://github.com/search?q=path%3Aconfig%20path%3A**%2Fcheckstyle-checks.xml+repo%3Acheckstyle%2Fcheckstyle+SuppressionXpathFilter">
               Checkstyle Style</a>
+          </li>
+          <li>
+            <a href="https://github.com/search?q=path%3Asrc%2Fmain%2Fresources%20path%3A**%2Fopenjdk_checks.xml+repo%3Acheckstyle%2Fcheckstyle+SuppressionXpathFilter">
+            OpenJDK Style</a>
           </li>
         </ul>
       </subsection>

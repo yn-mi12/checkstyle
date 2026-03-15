@@ -24,11 +24,41 @@ import org.junit.jupiter.api.Test;
 import com.google.checkstyle.test.base.AbstractGoogleModuleTestSupport;
 
 /** Some Javadoc A {@code Foo} is a simple Javadoc. */
-class OverrideAlwaysUsedTest extends AbstractGoogleModuleTestSupport {
+public class OverrideAlwaysUsedTest extends AbstractGoogleModuleTestSupport {
 
     @Override
     public String getPackageLocation() {
         return "com/google/checkstyle/test/chapter6programpractice/rule61overridealwaysused";
+    }
+
+    @Test
+    public void testOverrideAlwaysUsedForRecordViolation() throws Exception {
+        verifyWithWholeConfig(getPath("InputOverrideAlwaysUsedForRecordViolation.java"));
+    }
+
+    @Test
+    public void testOverrideAlwaysUsedForRecordValid() throws Exception {
+        verifyWithWholeConfig(getPath("InputOverrideAlwaysUsedForRecordValid.java"));
+    }
+
+    @Test
+    public void testOverrideAlwaysUsedForRecordNested() throws Exception {
+        verifyWithWholeConfig(getPath("InputOverrideAlwaysUsedForRecordNested.java"));
+    }
+
+    @Test
+    public void testOverrideAlwaysUsedForRecordGeneric() throws Exception {
+        verifyWithWholeConfig(getPath("InputOverrideAlwaysUsedForRecordGeneric.java"));
+    }
+
+    @Test
+    public void testOverrideAlwaysUsedForRecordMixed() throws Exception {
+        verifyWithWholeConfig(getPath("InputOverrideAlwaysUsedForRecordMixed.java"));
+    }
+
+    @Test
+    public void testOverrideAlwaysUsedForRecordInClass() throws Exception {
+        verifyWithWholeConfig(getPath("InputOverrideAlwaysUsedForRecordInClass.java"));
     }
 
     @Test

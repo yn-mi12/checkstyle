@@ -247,20 +247,9 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
     }
 
     @Test
-    public void testAddException()
-            throws Exception {
-        final XMLLogger logger = new XMLLogger(outStream, OutputStreamOptions.CLOSE);
-        logger.auditStarted(null);
-        final Violation violation =
-            new Violation(1, 1,
-                "messages.properties", null, null, null, getClass(), null);
-        final AuditEvent ev = new AuditEvent(this, "Test.java", violation);
-        logger.addException(ev, new TestException("msg", new RuntimeException("msg")));
-        logger.auditFinished(null);
-        verifyXml(getPath("ExpectedXMLLoggerException.xml"), outStream);
-        assertWithMessage("Invalid close count")
-            .that(outStream.getCloseCount())
-            .isEqualTo(1);
+    public void testAddException() throws Exception {
+        verifyWithInlineConfigParserAndXmlLogger("InputXMLLoggerException.java",
+                "ExpectedXMLLoggerExceptionInput.xml");
     }
 
     /**
@@ -342,6 +331,12 @@ public class XMLLoggerTest extends AbstractXmlTestSupport {
         verifyWithInlineConfigParserAndXmlLogger(inputFile, expectedXmlReport);
     }
 
+    /**
+     * Cannot use verifyWithInlineConfigParserAndXmlLogger because this test
+     * requires a custom AuditEvent with a special character in the file
+     * name ("&") to verify XML escaping, without creating a physical file
+     * with special characters in the repository.
+     */
     @Test
     public void testFileOpenTag()
             throws Exception {

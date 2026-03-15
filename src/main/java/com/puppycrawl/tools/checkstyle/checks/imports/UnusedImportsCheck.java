@@ -28,8 +28,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import org.checkerframework.checker.index.qual.IndexOrLow;
-
 import com.puppycrawl.tools.checkstyle.FileStatefulCheck;
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
@@ -71,7 +69,7 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
  * dependency for documentation purposes only. As an example, the import
  * {@code java.util.List} would be considered referenced with the Javadoc
  * comment {@code {@link List}}. The alternative to avoid introducing a compile-time
- * dependency would be to write the Javadoc comment as {@code {&#64;link java.util.List}}.
+ * dependency would be to write the Javadoc comment as {@code {@link List}}.
  * </li>
  * </ul>
  *
@@ -97,6 +95,7 @@ import com.puppycrawl.tools.checkstyle.utils.TokenUtil;
  * @since 3.0
  */
 @FileStatefulCheck
+@SuppressWarnings("UnrecognisedJavadocTag")
 public class UnusedImportsCheck extends AbstractCheck {
 
     /**
@@ -365,7 +364,7 @@ public class UnusedImportsCheck extends AbstractCheck {
     private static List<JavadocTag> getTargetTags(TextBlock cmt,
             JavadocUtil.JavadocTagType javadocTagType) {
         return JavadocUtil.getJavadocTags(cmt, javadocTagType)
-            .getValidTags()
+            .validTags()
             .stream()
             .filter(tag -> isMatchingTagType(tag, javadocTagType))
             .map(UnusedImportsCheck::bestTryToMatchReference)
@@ -485,7 +484,7 @@ public class UnusedImportsCheck extends AbstractCheck {
      * @return -1 if parentheses are unbalanced, 0 if no method is found,
      *         or the index of the first space outside parentheses.
      */
-    private static @IndexOrLow("#1")int extractReferencePart(String input) {
+    private static int extractReferencePart(String input) {
         int parenthesesCount = 0;
         int firstSpaceOutsideParens = -1;
         for (int index = 0; index < input.length(); index++) {
@@ -545,7 +544,7 @@ public class UnusedImportsCheck extends AbstractCheck {
          *
          * @param type the type name
          */
-        public void addDeclaredType(String type) {
+        /* package */ void addDeclaredType(String type) {
             declaredTypes.add(type);
         }
 
@@ -554,7 +553,7 @@ public class UnusedImportsCheck extends AbstractCheck {
          *
          * @param type the type name
          */
-        public void addReferencedType(String type) {
+        /* package */ void addReferencedType(String type) {
             referencedTypes.add(type);
         }
 
@@ -563,7 +562,7 @@ public class UnusedImportsCheck extends AbstractCheck {
          *
          * @param types the type names
          */
-        public void addReferencedTypes(Collection<String> types) {
+        /* package */ void addReferencedTypes(Collection<String> types) {
             referencedTypes.addAll(types);
         }
 
@@ -571,7 +570,7 @@ public class UnusedImportsCheck extends AbstractCheck {
          * Filters out all references to locally defined types.
          *
          */
-        public void finish() {
+        /* package */ void finish() {
             referencedTypes.removeAll(declaredTypes);
         }
 
@@ -580,7 +579,7 @@ public class UnusedImportsCheck extends AbstractCheck {
          *
          * @return a new frame.
          */
-        public Frame push() {
+        /* package */ Frame push() {
             return new Frame(this);
         }
 
@@ -589,7 +588,7 @@ public class UnusedImportsCheck extends AbstractCheck {
          *
          * @return the parent frame
          */
-        public Frame pop() {
+        /* package */ Frame pop() {
             finish();
             parent.addReferencedTypes(referencedTypes);
             return parent;
@@ -601,7 +600,7 @@ public class UnusedImportsCheck extends AbstractCheck {
          * @param type the type name
          * @return {@code true} if the type is used
          */
-        public boolean isReferencedType(String type) {
+        /* package */ boolean isReferencedType(String type) {
             return referencedTypes.contains(type);
         }
 
@@ -610,7 +609,7 @@ public class UnusedImportsCheck extends AbstractCheck {
          *
          * @return a new frame.
          */
-        public static Frame compilationUnit() {
+        /* package */ static Frame compilationUnit() {
             return new Frame(null);
         }
 

@@ -33,6 +33,7 @@ import com.puppycrawl.tools.checkstyle.api.DetailNode;
 import com.puppycrawl.tools.checkstyle.api.JavadocCommentsTokenTypes;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.utils.JavadocUtil;
+import com.puppycrawl.tools.checkstyle.utils.NullUtil;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -184,7 +185,7 @@ public final class JavadocPropertiesGenerator {
      * @return the text content of the inner {@code TokenTypes.IDENT} node
      */
     private static String getName(DetailAST ast) {
-        return ast.findFirstToken(TokenTypes.IDENT).getText();
+        return NullUtil.notNull(ast.findFirstToken(TokenTypes.IDENT)).getText();
     }
 
     /**
@@ -278,22 +279,21 @@ public final class JavadocPropertiesGenerator {
                 node = node.getNextSibling()) {
             switch (node.getType()) {
                 // The text to append.
-                case JavadocCommentsTokenTypes.TEXT:
+                case JavadocCommentsTokenTypes.TEXT -> {
                     if (wrapWithCodeTag) {
                         builder.append("<code>").append(node.getText().trim()).append("</code>");
                     }
                     else {
                         builder.append(node.getText().trim());
                     }
-                    break;
-                // skip tag markers
-                case JavadocCommentsTokenTypes.JAVADOC_INLINE_TAG_START:
-                case JavadocCommentsTokenTypes.JAVADOC_INLINE_TAG_END:
-                case JavadocCommentsTokenTypes.TAG_NAME:
-                    break;
-                default:
-                    throw new CheckstyleException("Unsupported child in the inline tag "
-                        + JavadocUtil.getTokenName(node.getType()));
+                }
+                case JavadocCommentsTokenTypes.JAVADOC_INLINE_TAG_START,
+                     JavadocCommentsTokenTypes.JAVADOC_INLINE_TAG_END,
+                     JavadocCommentsTokenTypes.TAG_NAME -> {
+                    // skip tag markers
+                }
+                default -> throw new CheckstyleException("Unsupported child in the inline tag "
+                    + JavadocUtil.getTokenName(node.getType()));
             }
         }
     }

@@ -236,39 +236,22 @@ public final class InlineConfigParser {
      *  Until <a href="https://github.com/checkstyle/checkstyle/issues/15456">#15456</a>.
      */
     private static final Set<String> SUPPRESSED_CHECKS = Set.of(
-
-            "com.puppycrawl.tools.checkstyle.checks.coding.IllegalInstantiationCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.IllegalTokenTextCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.MatchXpathCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.ModifiedControlVariableCheck",
             "com.puppycrawl.tools.checkstyle.checks.coding.MultipleStringLiteralsCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.NestedTryDepthCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.StringLiteralEqualityCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.SuperFinalizeCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding"
-                    + ".UnnecessarySemicolonAfterTypeMemberDeclarationCheck",
             "com.puppycrawl.tools.checkstyle.checks.design.DesignForExtensionCheck",
             "com.puppycrawl.tools.checkstyle.checks.design.HideUtilityClassConstructorCheck",
             "com.puppycrawl.tools.checkstyle.checks.design.InnerTypeLastCheck",
-            "com.puppycrawl.tools.checkstyle.checks.design.MutableExceptionCheck",
             "com.puppycrawl.tools.checkstyle.checks.design.OneTopLevelClassCheck",
-
-            "com.puppycrawl.tools.checkstyle.checks.design.VisibilityModifierCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc."
                     + "AbstractJavadocCheckTest$TokenIsNotInAcceptablesCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.AtclauseOrderCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.InvalidJavadocPositionCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocBlockTagLocationCheck",
-            "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMissingLeadingAsteriskCheck",
-            "com.puppycrawl.tools.checkstyle.checks.javadoc"
-                    + ".JavadocMissingWhitespaceAfterAsteriskCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc"
                     + ".JavadocTagContinuationIndentationCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocVariableCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.MissingJavadocMethodCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.MissingJavadocPackageCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.MissingJavadocTypeCheck",
-            "com.puppycrawl.tools.checkstyle.checks.javadoc.NonEmptyAtclauseDescriptionCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc"
                     + ".RequireEmptyLineBeforeBlockTagGroupCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.SingleLineJavadocCheck",
@@ -321,24 +304,14 @@ public final class InlineConfigParser {
      *  Until <a href="https://github.com/checkstyle/checkstyle/issues/16807">#16807</a>.
      */
     private static final Set<String> SUPPRESSED_MODULES = Set.of(
-            "com.puppycrawl.tools.checkstyle.checks.coding.FinalLocalVariableCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck",
             "com.puppycrawl.tools.checkstyle.checks.coding.IllegalTypeCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.MagicNumberCheck",
             "com.puppycrawl.tools.checkstyle.checks.coding.MatchXpathCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.ModifiedControlVariableCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.NestedIfDepthCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.OneStatementPerLineCheck",
             "com.puppycrawl.tools.checkstyle.checks.coding.RequireThisCheck",
             "com.puppycrawl.tools.checkstyle.checks.coding.UnusedLocalVariableCheck",
-            "com.puppycrawl.tools.checkstyle.checks.coding.VariableDeclarationUsageDistanceCheck",
-            "com.puppycrawl.tools.checkstyle.checks.design.HideUtilityClassConstructorCheck",
             "com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck",
             "com.puppycrawl.tools.checkstyle.checks.imports.ImportControlCheck",
             "com.puppycrawl.tools.checkstyle.checks.imports.ImportOrderCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocContentLocationCheck",
-            "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocMethodCheck",
-            "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocPackageCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocParagraphCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocStyleCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck",
@@ -348,7 +321,6 @@ public final class InlineConfigParser {
             "com.puppycrawl.tools.checkstyle.checks.javadoc.MissingJavadocTypeCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.SummaryJavadocCheck",
             "com.puppycrawl.tools.checkstyle.checks.javadoc.WriteTagCheck",
-            "com.puppycrawl.tools.checkstyle.checks.metrics.BooleanExpressionComplexityCheck",
             "com.puppycrawl.tools.checkstyle.checks.metrics.ClassFanOutComplexityCheck",
             "com.puppycrawl.tools.checkstyle.checks.metrics.CyclomaticComplexityCheck",
             "com.puppycrawl.tools.checkstyle.checks.modifier.RedundantModifierCheck",
@@ -356,14 +328,11 @@ public final class InlineConfigParser {
             "com.puppycrawl.tools.checkstyle.checks.naming.ConstantNameCheck",
             "com.puppycrawl.tools.checkstyle.checks.naming.LocalFinalVariableNameCheck",
             "com.puppycrawl.tools.checkstyle.checks.naming.LocalVariableNameCheck",
-            "com.puppycrawl.tools.checkstyle.checks.naming.MemberNameCheck",
             "com.puppycrawl.tools.checkstyle.checks.naming.ParameterNameCheck",
             "com.puppycrawl.tools.checkstyle.checks.regexp.RegexpCheck",
             "com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineCheck",
             "com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck",
-            "com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck",
             "com.puppycrawl.tools.checkstyle.checks.sizes.ParameterNumberCheck",
-            "com.puppycrawl.tools.checkstyle.checks.whitespace.MethodParamPadCheck",
             "com.puppycrawl.tools.checkstyle.checks.whitespace.NoWhitespaceAfterCheck",
             "com.puppycrawl.tools.checkstyle.checks.whitespace.ParenPadCheck",
             "com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAfterCheck",
@@ -394,6 +363,8 @@ public final class InlineConfigParser {
                 "com.puppycrawl.tools.checkstyle.checks.naming.ConstantNameCheck");
         MODULE_MAPPINGS.put("MemberName",
                 "com.puppycrawl.tools.checkstyle.checks.naming.MemberNameCheck");
+        MODULE_MAPPINGS.put("GoogleNonConstantFieldName",
+                "com.puppycrawl.tools.checkstyle.checks.naming.GoogleNonConstantFieldNameCheck");
         MODULE_MAPPINGS.put("MethodName",
                 "com.puppycrawl.tools.checkstyle.checks.naming.MethodNameCheck");
         MODULE_MAPPINGS.put("ParameterName",
@@ -486,7 +457,7 @@ public final class InlineConfigParser {
             setViolations(testInputConfigBuilder, lines, setFilteredViolations, inputFilePath);
         }
         catch (CheckstyleException exc) {
-            throw new CheckstyleException(exc.getMessage() + " in " + inputFilePath, exc);
+            throw new CheckstyleException("Failed to set violations in " + inputFilePath, exc);
         }
         return testInputConfigBuilder.build();
     }
@@ -504,7 +475,7 @@ public final class InlineConfigParser {
             }
         }
         catch (CheckstyleException exc) {
-            throw new CheckstyleException(exc.getMessage() + " in " + inputFilePath, exc);
+            throw new CheckstyleException("Failed to set violations in " + inputFilePath, exc);
         }
 
         return testInputConfigBuilder.build().getViolations();
@@ -523,7 +494,7 @@ public final class InlineConfigParser {
             }
         }
         catch (CheckstyleException exc) {
-            throw new CheckstyleException(exc.getMessage() + " in " + inputFilePath, exc);
+            throw new CheckstyleException("Failed to set violations in " + inputFilePath, exc);
         }
 
         return testInputConfigBuilder.build().getFilteredViolations();
@@ -569,7 +540,7 @@ public final class InlineConfigParser {
             setViolations(testInputConfigBuilder, lines, false, inputFilePath);
         }
         catch (CheckstyleException exc) {
-            throw new CheckstyleException(exc.getMessage() + " in " + inputFilePath, exc);
+            throw new CheckstyleException("Failed to set violations in " + inputFilePath, exc);
         }
         return testInputConfigBuilder.buildWithXmlConfiguration();
     }
@@ -581,13 +552,13 @@ public final class InlineConfigParser {
      * @return true if a file provides xml configuration, otherwise false.
      */
     private static boolean checkIsXmlConfig(List<String> lines) {
-        return "/*xml".equals(lines.get(0));
+        return "/*xml".equals(lines.getFirst());
     }
 
     private static void setModules(TestInputConfiguration.Builder testInputConfigBuilder,
                                    String inputFilePath, List<String> lines)
             throws Exception {
-        if (!lines.get(0).startsWith("/*")) {
+        if (!lines.getFirst().startsWith("/*")) {
             throw new CheckstyleException("Config not specified on top."
                 + "Please see other inputs for examples of what is required.");
         }
@@ -1082,7 +1053,7 @@ public final class InlineConfigParser {
                 inputConfigBuilder.getChildrenModules();
 
         if (moduleLists.size() == 1) {
-            final String moduleName = moduleLists.get(0).getModuleName();
+            final String moduleName = moduleLists.getFirst().getModuleName();
 
             if (!PERMANENT_SUPPRESSED_CHECKS.contains(moduleName)
                     && !SUPPRESSED_CHECKS.contains(moduleName)) {

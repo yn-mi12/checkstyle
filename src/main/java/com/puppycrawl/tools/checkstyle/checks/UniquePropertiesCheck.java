@@ -168,6 +168,9 @@ public class UniquePropertiesCheck extends AbstractFileSetCheck {
 
         /**
          * Puts the value into properties by the key specified.
+         *
+         * @noinspection UseOfPropertiesAsHashtable
+         * @noinspectionreason We must override put to intercept properties loading.
          */
         @Override
         public synchronized Object put(Object key, Object value) {
@@ -185,7 +188,7 @@ public class UniquePropertiesCheck extends AbstractFileSetCheck {
          *
          * @return A collection of duplicated keys.
          */
-        public Map<String, Integer> getDuplicatedKeys() {
+        /* package */ Map<String, Integer> getDuplicatedKeys() {
             return new HashMap<>(duplicatedKeys);
         }
 

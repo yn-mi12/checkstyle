@@ -35,8 +35,13 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-      - name: Install groovy
-        run: sudo apt install groovy
+      - name: Install Groovy
+        run: |
+          curl --fail-with-body -s "https://get.sdkman.io" | bash
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          sdk install groovy
+          echo "$HOME/.sdkman/candidates/groovy/current/bin" >> "$GITHUB_PATH"
+          groovy --version
 
       - name: Checkout
         uses: actions/checkout@v6
@@ -58,7 +63,7 @@ jobs:
 
       - name: Share patch as artifact to apply on local
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: checker-${{ matrix.profile }}-patch
           path: target/checker-${{ matrix.profile }}.patch

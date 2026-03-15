@@ -98,13 +98,13 @@ public class SuppressionsLoaderTest extends AbstractPathTestSupport {
     @Test
     public void testLoadFromNonExistentUrl() {
         try {
-            SuppressionsLoader.loadSuppressions("http://^%$^* %&% %^&");
+            SuppressionsLoader.loadSuppressions("/non/existent/file.xml");
             assertWithMessage("exception expected").fail();
         }
         catch (CheckstyleException exc) {
             assertWithMessage("Invalid error message")
                 .that(exc.getMessage())
-                .isEqualTo("Unable to find: http://^%$^* %&% %^&");
+                .isEqualTo("Unable to find: /non/existent/file.xml");
         }
     }
 
@@ -389,4 +389,39 @@ public class SuppressionsLoaderTest extends AbstractPathTestSupport {
             .hasSize(1);
     }
 
+    @Test
+    public void testXpathSuppressionsExperimentalPuppyCrawl11() throws Exception {
+        final String fn = getPath("InputSuppressionsLoaderXpathExperimentalPuppyCrawl11.xml");
+        final Set<TreeWalkerFilter> filterSet = SuppressionsLoader.loadXpathSuppressions(fn);
+        assertWithMessage("Invalid number of filters")
+            .that(filterSet)
+            .hasSize(1);
+    }
+
+    @Test
+    public void testXpathSuppressionsExperimentalPuppyCrawl12() throws Exception {
+        final String fn = getPath("InputSuppressionsLoaderXpathExperimentalPuppyCrawl12.xml");
+        final Set<TreeWalkerFilter> filterSet = SuppressionsLoader.loadXpathSuppressions(fn);
+        assertWithMessage("Invalid number of filters")
+            .that(filterSet)
+            .hasSize(1);
+    }
+
+    @Test
+    public void testXpathSuppressionsExperimentalCheckstyle11() throws Exception {
+        final String fn = getPath("InputSuppressionsLoaderXpathExperimentalCheckstyle11.xml");
+        final Set<TreeWalkerFilter> filterSet = SuppressionsLoader.loadXpathSuppressions(fn);
+        assertWithMessage("Invalid number of filters")
+            .that(filterSet)
+            .hasSize(1);
+    }
+
+    @Test
+    public void testXpathSuppressionsExperimentalCheckstyle12() throws Exception {
+        final String fn = getPath("InputSuppressionsLoaderXpathExperimentalCheckstyle12.xml");
+        final Set<TreeWalkerFilter> filterSet = SuppressionsLoader.loadXpathSuppressions(fn);
+        assertWithMessage("Invalid number of filters")
+            .that(filterSet)
+            .hasSize(1);
+    }
 }

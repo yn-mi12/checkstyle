@@ -109,6 +109,7 @@
     <allow class="com.puppycrawl.tools.checkstyle.utils.CheckUtil" local-only="true"/>
     <allow class="com.puppycrawl.tools.checkstyle.utils.JavadocUtil" local-only="true"/>
     <allow class="com.puppycrawl.tools.checkstyle.utils.TokenUtil" local-only="true"/>
+    <allow class="com.puppycrawl.tools.checkstyle.utils.NullUtil" local-only="true"/>
     <allow class="com.puppycrawl.tools.checkstyle.PropertyType"/>
   </subpackage>
 
@@ -129,6 +130,15 @@
     </file>
     <file name="ModuleReflectionUtil">
       <allow class="com.puppycrawl.tools.checkstyle.AbstractAutomaticBean"/>
+    </file>
+
+    <file name="NullUtil">
+      <allow class="org.jspecify.annotations.NonNull"/>
+      <allow class="org.jspecify.annotations.Nullable"/>
+    </file>
+
+    <file name="WeakReferenceHolder">
+      <allow class="java.lang.ref.WeakReference" local-only="true"/>
     </file>
   </subpackage>
 
@@ -195,7 +205,6 @@
     </file>
     <subpackage name="imports">
       <allow class="com.puppycrawl.tools.checkstyle.XmlLoader" local-only="true"/>
-      <allow class="org.checkerframework.checker.index.qual.IndexOrLow"/>
     </subpackage>
     <subpackage name="indentation">
       <allow pkg="java.lang.reflect"/>

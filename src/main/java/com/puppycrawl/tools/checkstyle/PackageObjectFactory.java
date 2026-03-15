@@ -267,14 +267,14 @@ public class PackageObjectFactory implements ModuleFactory {
 
     /**
      * Create Object from optional full module names.
-     * In most case, there should be only one element in {@code fullModuleName}, otherwise
+     * In most case, there should be only one element in {@code fullModuleNames}, otherwise
      * an exception would be thrown.
      *
      * @param name name of module
      * @param fullModuleNames the supplied full module names set
-     * @return instance of module if there is only one element in {@code fullModuleName}
+     * @return instance of module if there is only one element in {@code fullModuleNames}
      * @throws CheckstyleException if the class fails to instantiate or there are more than one
-     *      element in {@code fullModuleName}
+     *      element in {@code fullModuleNames}
      */
     private Object createObjectFromFullModuleNames(String name, Set<String> fullModuleNames)
             throws CheckstyleException {
@@ -457,6 +457,8 @@ public class PackageObjectFactory implements ModuleFactory {
                 BASE_PACKAGE + ".checks.annotation.MissingDeprecatedCheck");
         NAME_TO_FULL_MODULE_NAME.put("MissingOverrideCheck",
                 BASE_PACKAGE + ".checks.annotation.MissingOverrideCheck");
+        NAME_TO_FULL_MODULE_NAME.put("MissingOverrideOnRecordAccessorCheck",
+                BASE_PACKAGE + ".checks.annotation.MissingOverrideOnRecordAccessorCheck");
         NAME_TO_FULL_MODULE_NAME.put("PackageAnnotationCheck",
                 BASE_PACKAGE + ".checks.annotation.PackageAnnotationCheck");
         NAME_TO_FULL_MODULE_NAME.put("SuppressWarningsCheck",
@@ -521,6 +523,8 @@ public class PackageObjectFactory implements ModuleFactory {
                 BASE_PACKAGE + ".checks.coding.IllegalCatchCheck");
         NAME_TO_FULL_MODULE_NAME.put("IllegalInstantiationCheck",
                 BASE_PACKAGE + ".checks.coding.IllegalInstantiationCheck");
+        NAME_TO_FULL_MODULE_NAME.put("IllegalSymbolCheck",
+                BASE_PACKAGE + ".checks.coding.IllegalSymbolCheck");
         NAME_TO_FULL_MODULE_NAME.put("IllegalThrowsCheck",
                 BASE_PACKAGE + ".checks.coding.IllegalThrowsCheck");
         NAME_TO_FULL_MODULE_NAME.put("IllegalTokenCheck",
@@ -593,6 +597,8 @@ public class PackageObjectFactory implements ModuleFactory {
                 BASE_PACKAGE + ".checks.coding.UnnecessarySemicolonInEnumerationCheck");
         NAME_TO_FULL_MODULE_NAME.put("UnnecessarySemicolonInTryWithResourcesCheck",
                 BASE_PACKAGE + ".checks.coding.UnnecessarySemicolonInTryWithResourcesCheck");
+        NAME_TO_FULL_MODULE_NAME.put("UseEnhancedSwitchCheck",
+            BASE_PACKAGE + ".checks.coding.UseEnhancedSwitchCheck");
         NAME_TO_FULL_MODULE_NAME.put("VariableDeclarationUsageDistanceCheck",
                 BASE_PACKAGE + ".checks.coding.VariableDeclarationUsageDistanceCheck");
         NAME_TO_FULL_MODULE_NAME.put("WhenShouldBeUsedCheck",
@@ -789,6 +795,8 @@ public class PackageObjectFactory implements ModuleFactory {
                 BASE_PACKAGE + ".checks.naming.LocalVariableNameCheck");
         NAME_TO_FULL_MODULE_NAME.put("MemberNameCheck",
                 BASE_PACKAGE + ".checks.naming.MemberNameCheck");
+        NAME_TO_FULL_MODULE_NAME.put("GoogleNonConstantFieldNameCheck",
+                BASE_PACKAGE + ".checks.naming.GoogleNonConstantFieldNameCheck");
         NAME_TO_FULL_MODULE_NAME.put("MethodNameCheck",
                 BASE_PACKAGE + ".checks.naming.MethodNameCheck");
         NAME_TO_FULL_MODULE_NAME.put("MethodTypeParameterNameCheck",
@@ -907,6 +915,8 @@ public class PackageObjectFactory implements ModuleFactory {
                 BASE_PACKAGE + ".checks.FinalParametersCheck");
         NAME_TO_FULL_MODULE_NAME.put("NewlineAtEndOfFileCheck",
                 BASE_PACKAGE + ".checks.NewlineAtEndOfFileCheck");
+        NAME_TO_FULL_MODULE_NAME.put("LineEndingCheck",
+                BASE_PACKAGE + ".checks.LineEndingCheck");
         NAME_TO_FULL_MODULE_NAME.put("NoCodeInFileCheck",
                 BASE_PACKAGE + ".checks.NoCodeInFileCheck");
         NAME_TO_FULL_MODULE_NAME.put("OuterTypeFilenameCheck",
@@ -929,6 +939,8 @@ public class PackageObjectFactory implements ModuleFactory {
                 BASE_PACKAGE + ".checks.UpperEllCheck");
         NAME_TO_FULL_MODULE_NAME.put("HexLiteralCaseCheck",
                 BASE_PACKAGE + ".checks.HexLiteralCaseCheck");
+        NAME_TO_FULL_MODULE_NAME.put("NumericalPrefixesInfixesSuffixesCharacterCaseCheck",
+                BASE_PACKAGE + ".checks.NumericalPrefixesInfixesSuffixesCharacterCaseCheck");
     }
 
     /**

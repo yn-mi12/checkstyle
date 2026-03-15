@@ -539,6 +539,17 @@
           </tr>
           <tr>
             <td>
+              <a href="checks/naming/googlenonconstantfieldname.html#GoogleNonConstantFieldName">
+                GoogleNonConstantFieldName
+              </a>
+            </td>
+            <td>
+              Checks that non-constant field names conform to the <a href="https://google.github.io/styleguide/javaguide.html#s5.2.5-non-constant-field-names">
+              Google Java Style Guide</a> for non-constant field naming.
+            </td>
+          </tr>
+          <tr>
+            <td>
               <a href="checks/header/header.html#Header">
                 Header
               </a>
@@ -618,6 +629,16 @@
             </td>
             <td>
               Checks for illegal instantiations where a factory method is preferred.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <a href="checks/coding/illegalsymbol.html#IllegalSymbol">
+                IllegalSymbol
+              </a>
+            </td>
+            <td>
+              Checks that specified symbols (by Unicode code points or ranges) are not used in code.
             </td>
           </tr>
           <tr>
@@ -922,6 +943,17 @@
           </tr>
           <tr>
             <td>
+              <a href="checks/misc/lineending.html#LineEnding">
+                LineEnding
+              </a>
+            </td>
+            <td>
+              Checks whether file uses a specific line-ending sequence (<code>LF</code>,
+              <code>CRLF</code>, or <code>CR</code>).
+            </td>
+          </tr>
+          <tr>
+            <td>
               <a href="checks/sizes/linelength.html#LineLength">
                 LineLength
               </a>
@@ -1109,6 +1141,17 @@
             <td>
               Verifies that the <code>@Override</code> annotation is present when the
               <code>@inheritDoc</code> javadoc tag is present.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <a href="checks/annotation/missingoverrideonrecordaccessor.html#MissingOverrideOnRecordAccessor">
+                MissingOverrideOnRecordAccessor
+              </a>
+            </td>
+            <td>
+              Verifies that explicitly declared record accessor methods include the
+              <code>@Override</code> annotation.
             </td>
           </tr>
           <tr>
@@ -1344,6 +1387,18 @@
             </td>
             <td>
               Checks that the block tag is followed by description.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <a href="checks/misc/numericalprefixesinfixessuffixescharactercase.html#NumericalPrefixesInfixesSuffixesCharacterCase">
+                NumericalPrefixesInfixesSuffixesCharacterCase
+              </a>
+            </td>
+            <td>
+              Checks that all numerical literal prefixes, infixes, and suffixes are written using
+              lowercase letters (for example prefixes : <code>0x, 0b</code>, infixes : <code>e,
+              p</code>, suffixes : <code>f, d</code>).
             </td>
           </tr>
           <tr>
@@ -1993,6 +2048,18 @@
             </td>
             <td>
               Checks that long constants are defined with an upper ell.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <a href="checks/coding/useenhancedswitch.html#UseEnhancedSwitch">
+                UseEnhancedSwitch
+              </a>
+            </td>
+            <td>
+              Ensures that the enhanced switch (using <code>-&gt;</code> for case labels) is used
+              instead of the traditional switch (using <code>:</code> for case labels) where
+              possible.
             </td>
           </tr>
           <tr>

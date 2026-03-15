@@ -32,6 +32,7 @@ all-sevntu-checks)
     | grep -vE "Checker|TreeWalker|Filter|Holder" | grep -v "^$" \
     | sed "s/com\.github\.sevntu\.checkstyle\.checks\..*\.//" \
     | sort | uniq | sed "s/Check$//" > $working_dir/file.txt
+
   wget -q http://sevntu-checkstyle.github.io/sevntu.checkstyle/apidocs/allclasses-frame.html -O - \
     | grep "<li>" | cut -d '>' -f 3 | sed "s/<\/a//" \
     | grep -E "Check$" \
@@ -262,12 +263,57 @@ no-error-pmd)
 no-error-hazelcast)
   CS_POM_VERSION="$(getCheckstylePomVersion)"
   echo "CS_version: ${CS_POM_VERSION}"
-  ./mvnw -e --no-transfer-progress clean install -Pno-validations
+  ./mvnw -e --no-transfer-progress clean package -Passembly,no-validations
   echo "Checkout Hazelcast sources..."
   checkout_from "https://github.com/hazelcast/hazelcast.git"
   cd .ci-temp/hazelcast
-  mvn -e --no-transfer-progress checkstyle:check \
-    -Dcheckstyle.version="${CS_POM_VERSION}"
+
+  # Modules using Apache License header
+  APACHE_SOURCES=()
+  for module in hazelcast hazelcast-spring hazelcast-spring-boot-autoconfiguration \
+                hazelcast-spring-tests hazelcast-build-utils hazelcast-tpc-engine \
+                hazelcast-archunit-rules; do
+    if [ -d "$module/src/main/java" ]; then
+      APACHE_SOURCES+=("$module/src/main/java")
+    fi
+    if [ -d "$module/src/test/java" ]; then
+      APACHE_SOURCES+=("$module/src/test/java")
+    fi
+  done
+
+  cat > checkstyle-apache.properties << EOF
+checkstyle.suppressions.file=checkstyle/suppressions.xml
+checkstyle.header.file=checkstyle/ClassHeaderApache.txt
+EOF
+  echo "Running Checkstyle on Apache-licensed modules..."
+  readarray -t apache_files < <(find "${APACHE_SOURCES[@]}" \
+    -name '*.java' ! -name 'module-info.java')
+  java -Xmx3g -jar ../../target/checkstyle-"${CS_POM_VERSION}"-all.jar \
+    -c checkstyle/checkstyle.xml \
+    -p checkstyle-apache.properties \
+    "${apache_files[@]}"
+
+  # hazelcast-sql uses Hazelcast Community License header
+  COMMUNITY_SOURCES=()
+  if [ -d "hazelcast-sql/src/main/java" ]; then
+    COMMUNITY_SOURCES+=("hazelcast-sql/src/main/java")
+  fi
+  if [ -d "hazelcast-sql/src/test/java" ]; then
+    COMMUNITY_SOURCES+=("hazelcast-sql/src/test/java")
+  fi
+
+  cat > checkstyle-community.properties << EOF
+checkstyle.suppressions.file=checkstyle/suppressions.xml
+checkstyle.header.file=checkstyle/ClassHeaderHazelcastCommunity.txt
+EOF
+  echo "Running Checkstyle on Community-licensed modules (hazelcast-sql)..."
+  readarray -t community_files < <(find "${COMMUNITY_SOURCES[@]}" \
+    -name '*.java' ! -name 'module-info.java')
+  java -Xmx3g -jar ../../target/checkstyle-"${CS_POM_VERSION}"-all.jar \
+    -c checkstyle/checkstyle.xml \
+    -p checkstyle-community.properties \
+    "${community_files[@]}"
+
   cd ..
   removeFolderWithProtectedFiles hazelcast
   ;;
@@ -277,8 +323,7 @@ no-error-configurate)
   echo "CS_version: ${CS_POM_VERSION}"
   ./mvnw -e --no-transfer-progress clean install -Pno-validations
   echo "Checkout target sources ..."
-  # until https://github.com/checkstyle/checkstyle/issues/18327
-  checkout_from "https://github.com/stoyanK7/Configurate.git"
+  checkout_from "https://github.com/SpongePowered/Configurate.git"
   cd .ci-temp/Configurate
   git fetch --depth 1 origin major-checkstyle-12:major-checkstyle-12
   git checkout major-checkstyle-12
@@ -473,7 +518,8 @@ spotbugs-and-pmd)
   mkdir -p .ci-temp/spotbugs-and-pmd
   CHECKSTYLE_DIR=$(pwd)
   export MAVEN_OPTS='-Xmx2g'
-  ./mvnw -e --no-transfer-progress clean test-compile pmd:check spotbugs:check
+  ./mvnw -e --no-transfer-progress clean pmd:check
+  ./mvnw -e --no-transfer-progress clean test-compile spotbugs:check
   cd .ci-temp/spotbugs-and-pmd
   grep "Processing_Errors" "$CHECKSTYLE_DIR/target/site/pmd.html" | cat > errors.log
   RESULT=$(cat errors.log | wc -l)
@@ -776,7 +822,7 @@ no-error-pgjdbc)
 no-error-orekit)
   CS_POM_VERSION="$(getCheckstylePomVersion)"
   echo CS_version: "${CS_POM_VERSION}"
-  ./mvnw -e --no-transfer-progress clean install -Pno-validations
+  ./mvnw -e --no-transfer-progress clean package -Passembly,no-validations
   echo "Checkout target sources ..."
   checkout_from https://github.com/Hipparchus-Math/hipparchus.git
   cd .ci-temp/hipparchus
@@ -793,8 +839,12 @@ no-error-orekit)
   # git checkout $(git describe --abbrev=0 --tags)
   git fetch --depth 1 origin "9b121e504771f3ddd303ab""cc""c74ac9db64541ea1"
   git checkout "9b121e504771f3ddd303ab""cc""c74ac9db64541ea1"
-  mvn -e --no-transfer-progress compile checkstyle:check \
-    -Dorekit.checkstyle.version="${CS_POM_VERSION}"
+  echo "checkstyle.header.file=license-header.txt" > checkstyle.properties
+  readarray -t files < <(find src/main/java -name "*.java")
+  java -jar "../../target/checkstyle-${CS_POM_VERSION}-all.jar" \
+    -c checkstyle.xml \
+    -p checkstyle.properties \
+    "${files[@]}"
   cd ..
   removeFolderWithProtectedFiles Orekit
   removeFolderWithProtectedFiles hipparchus
@@ -881,12 +931,15 @@ no-error-methods-distance)
 no-error-equalsverifier)
   CS_POM_VERSION="$(getCheckstylePomVersion)"
   echo CS_version: "${CS_POM_VERSION}"
-  ./mvnw -e --no-transfer-progress clean install -Pno-validations
+  ./mvnw -e --no-transfer-progress clean package -Passembly,no-validations
   echo "Checkout target sources ..."
   checkout_from https://github.com/jqno/equalsverifier.git
   cd .ci-temp/equalsverifier
-  mvn -e --no-transfer-progress -Pstatic-analysis-checkstyle compile \
-    checkstyle:check -Dversion.checkstyle="${CS_POM_VERSION}"
+  readarray -t files < <(find . \( -path '*/src/main/java/*.java' \
+    -o -path '*/src/test/java/*.java' \))
+  java -jar "../../target/checkstyle-${CS_POM_VERSION}-all.jar" \
+    -c build/checkstyle-config.xml \
+    "${files[@]}"
   cd ../
   removeFolderWithProtectedFiles equalsverifier
   ;;
@@ -929,11 +982,16 @@ no-error-spring-integration)
 no-error-htmlunit)
   CS_POM_VERSION="$(getCheckstylePomVersion)"
   echo CS_version: "${CS_POM_VERSION}"
-  ./mvnw -e --no-transfer-progress clean install -Pno-validations
+  ./mvnw -e --no-transfer-progress clean package -Passembly,no-validations
   echo "Checkout target sources ..."
   checkout_from https://github.com/HtmlUnit/htmlunit
   cd .ci-temp/htmlunit
-  mvn -e --no-transfer-progress compile checkstyle:check -Dcheckstyle.version="${CS_POM_VERSION}"
+  echo "checkstyle.suppressions.file=checkstyle_suppressions.xml" > checkstyle.properties
+  readarray -t files < <(find src/main/java src/test/java -name "*.java")
+  java -jar "../../target/checkstyle-${CS_POM_VERSION}-all.jar" \
+    -c checkstyle.xml \
+    -p checkstyle.properties \
+    "${files[@]}"
   cd ../
   removeFolderWithProtectedFiles htmlunit
   ;;
@@ -1232,6 +1290,18 @@ git-no-merge-commits)
   fi
   ;;
 
+git-check-single-commit)
+  # Check if there are multiple commits that should be squashed into one
+  COMMIT_COUNT=$(git rev-list --count master.."$PR_HEAD_SHA")
+  if [ "$COMMIT_COUNT" -gt 1 ]; then
+    echo Multiple commits found in PR. Please squash them into a single commit.
+    echo Commit count: "$COMMIT_COUNT"
+    echo To learn how to clean up your commit history, visit:
+    echo https://checkstyle.org/beginning_development.html#Starting_Development
+    exit 1
+  fi
+  ;;
+
 git-check-pull-number)
   PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
   echo "PR_NUMBER=${PR_NUMBER}"
@@ -1365,7 +1435,7 @@ spotless)
   ./mvnw -e --no-transfer-progress spotless:check
   ;;
 
-openrewrite-recipes)
+openrewrite-checkstyle-auto-fix)
   echo "Cloning and building OpenRewrite recipes..."
   PROJECT_ROOT="$(pwd)"
   export MAVEN_OPTS="-Xmx4g -Xms2g"
@@ -1373,7 +1443,7 @@ openrewrite-recipes)
   cd /tmp
   git clone https://github.com/checkstyle/checkstyle-openrewrite-recipes.git
   cd checkstyle-openrewrite-recipes
-  mvn -e --no-transfer-progress clean install -DskipTests
+  ./mvnw -e --no-transfer-progress clean install -DskipTests
 
   cd "$PROJECT_ROOT"
 
@@ -1381,8 +1451,79 @@ openrewrite-recipes)
   set +e
   ./mvnw -e --no-transfer-progress clean compile antrun:run@ant-phase-verify
   set -e
-  echo "Running OpenRewrite recipes..."
-  ./mvnw -e --no-transfer-progress rewrite:run -Drewrite.recipeChangeLogLevel=INFO
+  echo "Running CheckstyleAutoFix recipes..."
+  ./mvnw -e --no-transfer-progress rewrite:run \
+    -Drewrite.recipeChangeLogLevel=INFO \
+    -Drewrite.activeRecipes=org.checkstyle.CheckstyleAutoFix
+
+  echo "Checking for uncommitted changes..."
+  ./.ci/print-diff-as-patch.sh target/rewrite.patch
+
+  rm -rf /tmp/checkstyle-openrewrite-recipes
+  ;;
+
+openrewrite-refaster-rules-1)
+  echo "Cloning and building OpenRewrite recipes..."
+  PROJECT_ROOT="$(pwd)"
+  export MAVEN_OPTS="-Xmx4g -Xms2g"
+
+  cd /tmp
+  git clone https://github.com/checkstyle/checkstyle-openrewrite-recipes.git
+  cd checkstyle-openrewrite-recipes
+  ./mvnw -e --no-transfer-progress clean install -DskipTests
+
+  cd "$PROJECT_ROOT"
+
+  echo "Running RefasterRules Part 1 recipes..."
+  ./mvnw -e --no-transfer-progress rewrite:run \
+    -Drewrite.recipeChangeLogLevel=INFO \
+    -Drewrite.activeRecipes=org.checkstyle.RefasterRules1
+
+  echo "Checking for uncommitted changes..."
+  ./.ci/print-diff-as-patch.sh target/rewrite.patch
+
+  rm -rf /tmp/checkstyle-openrewrite-recipes
+  ;;
+
+openrewrite-refaster-rules-2)
+  echo "Cloning and building OpenRewrite recipes..."
+  PROJECT_ROOT="$(pwd)"
+  export MAVEN_OPTS="-Xmx4g -Xms2g"
+
+  cd /tmp
+  git clone https://github.com/checkstyle/checkstyle-openrewrite-recipes.git
+  cd checkstyle-openrewrite-recipes
+  ./mvnw -e --no-transfer-progress clean install -DskipTests
+
+  cd "$PROJECT_ROOT"
+
+  echo "Running RefasterRules Part 2 recipes..."
+  ./mvnw -e --no-transfer-progress rewrite:run \
+    -Drewrite.recipeChangeLogLevel=INFO \
+    -Drewrite.activeRecipes=org.checkstyle.RefasterRules2
+
+  echo "Checking for uncommitted changes..."
+  ./.ci/print-diff-as-patch.sh target/rewrite.patch
+
+  rm -rf /tmp/checkstyle-openrewrite-recipes
+  ;;
+
+openrewrite-static-analysis)
+  echo "Cloning and building OpenRewrite recipes..."
+  PROJECT_ROOT="$(pwd)"
+  export MAVEN_OPTS="-Xmx4g -Xms2g"
+
+  cd /tmp
+  git clone https://github.com/checkstyle/checkstyle-openrewrite-recipes.git
+  cd checkstyle-openrewrite-recipes
+  ./mvnw -e --no-transfer-progress clean install -DskipTests
+
+  cd "$PROJECT_ROOT"
+
+  echo "Running StaticAnalysis recipes..."
+  ./mvnw -e --no-transfer-progress rewrite:run \
+    -Drewrite.recipeChangeLogLevel=INFO \
+    -Drewrite.activeRecipes=org.checkstyle.StaticAnalysis
 
   echo "Checking for uncommitted changes..."
   ./.ci/print-diff-as-patch.sh target/rewrite.patch

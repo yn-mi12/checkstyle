@@ -365,8 +365,8 @@ public final class NPathComplexityCheck extends AbstractCheck {
     private void leaveUnitaryOperator() {
         if (Boolean.FALSE.equals(afterValues.pop())) {
             final Values valuePair = popValue();
-            BigInteger basicRangeValue = valuePair.getRangeValue();
-            BigInteger expressionValue = valuePair.getExpressionValue();
+            BigInteger basicRangeValue = valuePair.rangeValue();
+            BigInteger expressionValue = valuePair.expressionValue();
             if (expressionValue.equals(BigInteger.ZERO)) {
                 expressionValue = BigInteger.ONE;
             }
@@ -380,8 +380,8 @@ public final class NPathComplexityCheck extends AbstractCheck {
     /** Leaves while, do, for, if, ternary (?::), return or switch. */
     private void leaveConditional() {
         final Values valuePair = popValue();
-        final BigInteger expressionValue = valuePair.getExpressionValue();
-        BigInteger basicRangeValue = valuePair.getRangeValue();
+        final BigInteger expressionValue = valuePair.expressionValue();
+        BigInteger basicRangeValue = valuePair.rangeValue();
         if (currentRangeValue.equals(BigInteger.ZERO)) {
             currentRangeValue = BigInteger.ONE;
         }
@@ -394,8 +394,8 @@ public final class NPathComplexityCheck extends AbstractCheck {
     /** Leaves else, default or case group tokens. */
     private void leaveBranch() {
         final Values valuePair = popValue();
-        final BigInteger basicRangeValue = valuePair.getRangeValue();
-        final BigInteger expressionValue = valuePair.getExpressionValue();
+        final BigInteger basicRangeValue = valuePair.rangeValue();
+        final BigInteger expressionValue = valuePair.expressionValue();
         if (branchVisited && currentRangeValue.equals(BigInteger.ZERO)) {
             currentRangeValue = BigInteger.ONE;
         }
@@ -420,7 +420,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
     /** Leaves catch. */
     private void leaveAddingConditional() {
-        currentRangeValue = currentRangeValue.add(popValue().getRangeValue().add(BigInteger.ONE));
+        currentRangeValue = currentRangeValue.add(popValue().rangeValue().add(BigInteger.ONE));
     }
 
     /**
@@ -448,7 +448,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
     /** Leaves try. */
     private void leaveMultiplyingConditional() {
         currentRangeValue = currentRangeValue.add(BigInteger.ONE)
-                .multiply(popValue().getRangeValue().add(BigInteger.ONE));
+                .multiply(popValue().rangeValue().add(BigInteger.ONE));
     }
 
     /**
@@ -551,7 +551,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
          *
          * @param endToken token.
          */
-        public void setToken(DetailAST endToken) {
+        /* package */ void setToken(DetailAST endToken) {
             if (!isAfter(endToken)) {
                 endLineNo = endToken.getLineNo();
                 endColumnNo = endToken.getColumnNo();
@@ -559,7 +559,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
         }
 
         /** Sets end token coordinates to the start of the file. */
-        public void reset() {
+        /* package */ void reset() {
             endLineNo = 0;
             endColumnNo = 0;
         }
@@ -570,7 +570,7 @@ public final class NPathComplexityCheck extends AbstractCheck {
          * @param ast given token.
          * @return true, if saved coordinates located after given token.
          */
-        public boolean isAfter(DetailAST ast) {
+        /* package */ boolean isAfter(DetailAST ast) {
             final int lineNo = ast.getLineNo();
             final int columnNo = ast.getColumnNo();
             return lineNo <= endLineNo
@@ -582,44 +582,11 @@ public final class NPathComplexityCheck extends AbstractCheck {
 
     /**
      * Class that store range value and expression value.
+     *
+     * @param rangeValue NP value for range.
+     * @param expressionValue NP value for expression.
      */
-    private static final class Values {
-
-        /** NP value for range. */
-        private final BigInteger rangeValue;
-
-        /** NP value for expression. */
-        private final BigInteger expressionValue;
-
-        /**
-         * Constructor that assigns all of class fields.
-         *
-         * @param valueOfRange NP value for range
-         * @param valueOfExpression NP value for expression
-         */
-        private Values(BigInteger valueOfRange, BigInteger valueOfExpression) {
-            rangeValue = valueOfRange;
-            expressionValue = valueOfExpression;
-        }
-
-        /**
-         * Returns NP value for range.
-         *
-         * @return NP value for range
-         */
-        public BigInteger getRangeValue() {
-            return rangeValue;
-        }
-
-        /**
-         * Returns NP value for expression.
-         *
-         * @return NP value for expression
-         */
-        public BigInteger getExpressionValue() {
-            return expressionValue;
-        }
-
+    private record Values(BigInteger rangeValue, BigInteger expressionValue) {
     }
 
 }

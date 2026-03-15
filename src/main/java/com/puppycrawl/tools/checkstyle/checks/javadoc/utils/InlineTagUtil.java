@@ -108,8 +108,8 @@ public final class InlineTagUtil {
     private static String convertLinesToString(String... lines) {
         final StringBuilder builder = new StringBuilder(1024);
         for (String line : lines) {
-            builder.append(line);
-            builder.append(LINE_FEED);
+            builder.append(line)
+                    .append(LINE_FEED);
         }
         return builder.toString();
     }
@@ -123,7 +123,7 @@ public final class InlineTagUtil {
      */
     private static LineColumn getLineColumnOfIndex(String source, int index) {
         final String precedingText = source.subSequence(0, index).toString();
-        final String[] precedingLines = NEWLINE_PATTERN.split(precedingText);
+        final String[] precedingLines = NEWLINE_PATTERN.split(precedingText, -1);
         final String lastLine = precedingLines[precedingLines.length - 1];
         return new LineColumn(precedingLines.length, lastLine.length());
     }
